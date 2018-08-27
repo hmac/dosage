@@ -12,6 +12,7 @@ import Html.Events exposing (onClick, onInput, on, targetValue)
 import Json.Decode as Json
 import Json.Decode exposing (andThen, map)
 
+import Tuple
 import List
 import Maybe
 import String
@@ -138,20 +139,37 @@ dosageInstruction model =
             Daily -> dailyDosageInstruction model w
             Divided -> dividedDosageInstruction model w
 
+-- TODO: explain why we switch from 5-7 to 2-3 (poor kidney function)
 dailyDosageInstruction : Model -> Float -> Html.Html Msg
 dailyDosageInstruction model weight =
-  let
-      (min, max) = (5 * weight, 7 * weight)
-      initialRange =
-        (min |> round |> toString)
-        ++ "-"
-        ++ (max |> round |> toString)
-        ++ " mg"
-  in
-      div [] [
-          div [] [text ("Initial dose: " ++ initialRange ++ " (from base dose of 5-7 mg / kg)")]
-        , div [] [text "Next dose depends on serum gentamicin level"]
-      ]
+  case creatinineClearance model of
+    Nothing -> div [] []
+    Just (Clearance cc) ->
+      let
+          perKg = if cc < 20.0 then (2, 3) else (5, 7)
+          perKgStr = let (a, b) = perKg in (toString a) ++ "-" ++ (toString b) ++ " mg/kg"
+          (min, max) = let f = (\x -> round (x * weight))
+                       in Tuple.mapBoth f f perKg
+          initialRange = (toString min) ++ "-" ++ (toString max) ++ " mg"
+          repeat =
+            if cc >= 60.0 then
+              "dose every 24 hours"
+            else if cc >= 40.0 then
+              "dose every 36 hours"
+            else if cc >= 20.0 then
+              "dose every 48 hours"
+            else
+              "take gentamicin levels at 48 hours; apply next dose when levels fall to < 1 µmol/L"
+      in
+          div [] [
+              div [] [text ("Initial dose: " ++ initialRange ++ " (from base dose of " ++ perKgStr ++ ")")]
+            , div [] [text ("Repeat: " ++ repeat)]
+          ]
+
+-- TODO
+-- if using 7 mg/kg daily dose (hartford nomogram):
+-- take gentamicin level 6-14 hours after first dose
+-- compare level with hartford nomogram to determine next dosage interval
 
 dividedDosageInstruction : Model -> Float -> Html.Html Msg
 dividedDosageInstruction model weight =
@@ -163,7 +181,11 @@ dividedDosageInstruction model weight =
         ++ (max |> round |> toString)
         ++ " mg"
   in
-      div [] [ text (range ++ " every 8 hours (from base dose of 3-5 mg / kg)") ]
+      div [] [
+        p [] [text (range ++ " every 8 hours (from base dose of 3-5 mg / kg)") ]
+        , p [] [text "After 1 hour, gentamicin levels should be 5-10 mg/L"]
+        , p [] [text "After 24 hours, gentamicin levels should be < 2 mg/L"]
+      ]
 
 -- Inputs
 
@@ -227,7 +249,7 @@ serumCreatinineInput { serumCreatinine } =
     div [] [
         label [] [ text "Serum Creatinine: " ]
       , input [ type_ "number", value scStr, onInput SetSerumCreatinine ] []
-      , text " mg/dl"
+      , text " µmol/L"
       ]
 
 dosageInput : Model -> Html.Html Msg
@@ -317,11 +339,11 @@ creatinineClearance : Model -> Maybe Clearance
 creatinineClearance { sex, age, weight, serumCreatinine } =
   case (age, weight, serumCreatinine) of
     (Just (Age a), Just (Weight w), Just (SerumCreatinine sc)) ->
-      let maleClearance = toFloat ((140 - a) * w) / (72 * sc)
+      let baseClearance = toFloat ((140 - a) * w) / sc
       in
         case sex of 
-          Male -> Just (Clearance maleClearance)
-          Female -> Just (Clearance (0.85 * maleClearance))
+          Male -> Just (Clearance (baseClearance * 1.23))
+          Female -> Just (Clearance (baseClearance * 1.04))
     _ -> Nothing
 
 -- Generic Utils
