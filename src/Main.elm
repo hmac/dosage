@@ -1,4 +1,5 @@
 -- TODO: Use Ratio instead of Float
+-- TODO: What do we do if patient is less than 5 feet tall?
 
 module Main exposing (main)
 
@@ -29,6 +30,7 @@ type alias Model = {
     , age : Maybe Age
     , weight : Maybe Weight
     , serumCreatinine : Maybe SerumCreatinine
+    , dosage : Dosage
   }
 
 type Sex = Male | Female
@@ -38,6 +40,7 @@ type Weight = Weight Int
 type Age = Age Int
 type SerumCreatinine = SerumCreatinine Float
 type Clearance = Clearance Float
+type Dosage = Daily | Divided
 
 init : Model
 init = {
@@ -47,6 +50,7 @@ init = {
     , age = Nothing
     , weight = Nothing
     , serumCreatinine = Nothing
+    , dosage = Daily
   }
 
 type Msg = ToggleObese
@@ -56,6 +60,7 @@ type Msg = ToggleObese
          | SetWeight String
          | SetAge String
          | SetSerumCreatinine String
+         | SetDosage (Maybe Dosage)
 
 update : Msg -> Model -> Model
 update msg model = case msg of
@@ -76,6 +81,10 @@ update msg model = case msg of
     { model | age = Maybe.map Age (String.toInt ageStr) }
   SetSerumCreatinine scStr ->
     { model | serumCreatinine = Maybe.map SerumCreatinine (String.toFloat scStr) }
+  SetDosage mDosage ->
+    case mDosage of
+      Just d -> { model | dosage = d }
+      Nothing -> model
 
 view : Model -> Html.Html Msg
 view model =
@@ -89,16 +98,28 @@ view model =
         , obeseInput
         , weightInput
         , serumCreatinineInput
+        , dosageInput
         ]
       clearance = maybeToString (Maybe.map (\(Clearance c) -> c) (creatinineClearance model))
       correctedWeight = maybeToString (Maybe.map round (correctedBodyWeight model))
       idealWeight = maybeToString (Maybe.map round (idealBodyWeight model))
+      weight = if model.isObese then (correctedBodyWeight model) else (idealBodyWeight model)
+      dailyInitialDose =
+        case weight of
+          Nothing -> Nothing
+          Just w ->
+            let mg = List.range 3 5
+            in mg |> List.map (\e -> (toFloat e) * w / 3) |> List.maximum
       outputs =
         [
             if model.isObese
             then text ("Corrected body weight: " ++ correctedWeight ++ " kg")
             else text ("Ideal body weight: " ++ idealWeight ++ " kg")
           , div [] [text ("Creatinine Clearance: " ++ clearance)]
+          , div [] [
+              text "Dosage: "
+            , dosageInstruction model
+            ]
         ]
   in
     div [class "container"] [
@@ -106,6 +127,43 @@ view model =
       , br [] []
       , div [] outputs
     ]
+
+dosageInstruction : Model -> Html.Html Msg
+dosageInstruction model =
+  let weight = if model.isObese then correctedBodyWeight else idealBodyWeight
+  in case (weight model) of
+      Nothing -> div [] []
+      Just w ->
+        case model.dosage of
+            Daily -> dailyDosageInstruction model w
+            Divided -> dividedDosageInstruction model w
+
+dailyDosageInstruction : Model -> Float -> Html.Html Msg
+dailyDosageInstruction model weight =
+  let
+      (min, max) = (5 * weight, 7 * weight)
+      initialRange =
+        (min |> round |> toString)
+        ++ "-"
+        ++ (max |> round |> toString)
+        ++ " mg"
+  in
+      div [] [
+          div [] [text ("Initial dose: " ++ initialRange ++ " (from base dose of 5-7 mg / kg)")]
+        , div [] [text "Next dose depends on serum gentamicin level"]
+      ]
+
+dividedDosageInstruction : Model -> Float -> Html.Html Msg
+dividedDosageInstruction model weight =
+  let
+      (min, max) = (3 * weight / 3, 5 * weight / 3)
+      range =
+        (min |> round |> toString)
+        ++ "-"
+        ++ (max |> round |> toString)
+        ++ " mg"
+  in
+      div [] [ text (range ++ " every 8 hours (from base dose of 3-5 mg / kg)") ]
 
 -- Inputs
 
@@ -172,6 +230,16 @@ serumCreatinineInput { serumCreatinine } =
       , text " mg/dl"
       ]
 
+dosageInput : Model -> Html.Html Msg
+dosageInput { dosage } =
+  div [] [
+      label [] [ text "Dosage: " ]
+    , select [ on "change" (map (SetDosage << stringToDosage) targetValue) ] [
+          option [ value "daily", selected (dosage == Daily)] [ text "Daily" ]
+        , option [ value "divided", selected (dosage == Divided) ] [ text "Divided" ]
+      ]
+  ]
+
 -- Specific Utils
 
 heightToString : Maybe Height -> String
@@ -211,6 +279,12 @@ stringToSex : String -> Maybe Sex
 stringToSex str = case str of
   "male" -> Just Male
   "female" -> Just Female
+  _ -> Nothing
+
+stringToDosage : String -> Maybe Dosage
+stringToDosage str = case str of
+  "daily" -> Just Daily
+  "divided" -> Just Divided
   _ -> Nothing
 
 -- Logic
