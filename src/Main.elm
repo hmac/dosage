@@ -1,5 +1,7 @@
 -- TODO: Use Ratio instead of Float
 -- TODO: What do we do if patient is less than 5 feet tall?
+-- TODO: Display units for creatinine clearance
+-- TOOD: calc BMI and obesity from height and weight
 
 module Main exposing (main)
 
@@ -27,6 +29,7 @@ main = Browser.sandbox { init = init, update = update, view = view }
 type alias Model = {
       isObese : Bool
     , sex : Sex
+    , defaultHeightUnit : HeightUnit
     , height : Maybe Height
     , age : Maybe Age
     , weight : Maybe Weight
@@ -47,6 +50,7 @@ init : Model
 init = {
     isObese = False
     , sex = Female
+    , defaultHeightUnit = Inch
     , height = Nothing
     , age = Nothing
     , weight = Nothing
@@ -74,8 +78,12 @@ update msg model = case msg of
   SetHeightValue unit heightStr ->
     { model | height = Maybe.map (Height unit) (String.toInt heightStr) }
   SetHeightUnit unitStr ->
-    let mHeight = Maybe.map (\(Height _ h) -> h) model.height
-    in { model | height = Maybe.map2 Height (stringToHeightUnit unitStr) mHeight }
+    case stringToHeightUnit unitStr of
+      Just u ->
+        case model.height of
+          Just (Height _ h) -> { model | height = Just (Height u h), defaultHeightUnit = u }
+          Nothing -> { model | defaultHeightUnit = u }
+      Nothing -> model
   SetWeight weightStr ->
     { model | weight = Maybe.map Weight (String.toInt weightStr) }
   SetAge ageStr ->
@@ -139,37 +147,59 @@ dosageInstruction model =
             Daily -> dailyDosageInstruction model w
             Divided -> dividedDosageInstruction model w
 
--- TODO: explain why we switch from 5-7 to 2-3 (poor kidney function)
-dailyDosageInstruction : Model -> Float -> Html.Html Msg
-dailyDosageInstruction model weight =
-  case creatinineClearance model of
-    Nothing -> div [] []
-    Just (Clearance cc) ->
-      let
-          perKg = if cc < 20.0 then (2, 3) else (5, 7)
-          perKgStr = let (a, b) = perKg in (toString a) ++ "-" ++ (toString b) ++ " mg/kg"
-          (min, max) = let f = (\x -> round (x * weight))
-                       in Tuple.mapBoth f f perKg
-          initialRange = (toString min) ++ "-" ++ (toString max) ++ " mg"
-          repeat =
-            if cc >= 60.0 then
-              "dose every 24 hours"
-            else if cc >= 40.0 then
-              "dose every 36 hours"
-            else if cc >= 20.0 then
-              "dose every 48 hours"
-            else
-              "take gentamicin levels at 48 hours; apply next dose when levels fall to < 1 µmol/L"
-      in
-          div [] [
-              div [] [text ("Initial dose: " ++ initialRange ++ " (from base dose of " ++ perKgStr ++ ")")]
-            , div [] [text ("Repeat: " ++ repeat)]
-          ]
+-- Regimen describes the dosing regimen (how much to give and when)
+-- base:      the per-Kg calculated dosage
+-- initial:   the actual amount to give as the first dose (base * weight)
+-- following: instructions for the next dose
+type alias Regimen = { base : Dose, initial : Dose, following : (Hour, DoseInstruction), note : Maybe String }
+
+type alias Hour = Int
+type alias Dose = (Int, Int)
+type DoseInstruction = Dose | Other String
 
 -- TODO
 -- if using 7 mg/kg daily dose (hartford nomogram):
 -- take gentamicin level 6-14 hours after first dose
 -- compare level with hartford nomogram to determine next dosage interval
+daily : Model -> Float -> Maybe Regimen
+daily model weight =
+  case creatinineClearance model of
+    Nothing -> Nothing
+    Just (Clearance cc) ->
+      let
+          perKg = if cc < 20.0 then (2, 3) else (5, 7)
+          note = if cc < 20.0 then Just "poor kidney function" else Nothing
+          (min, max) = let f = (\x -> round (x * weight)) in Tuple.mapBoth f f perKg
+          following =
+            if cc >= 60.0 then
+              (24, Dose)
+            else if cc >= 40.0 then
+              (36, Dose)
+            else if cc >= 20.0 then
+              (48, Dose)
+            else
+              (48, Other "take gentamicin levels; apply next dose when levels fall to < 1 µmol/L")
+      in
+          Just { base = perKg, initial = (min, max), following = following, note = note}
+
+dailyDosageInstruction : Model -> Float -> Html.Html Msg
+dailyDosageInstruction model weight =
+  case daily model weight of
+    Nothing -> div [] []
+    Just { base, initial, following, note } ->
+      let
+        rangeStr (a, b) = (toString a) ++ "-" ++ (toString b) ++ " mg"
+        followingStr = case following of
+          (hour, Dose) -> "Dose every " ++ toString hour ++ " hours"
+          (hour, Other s) -> "At " ++ toString hour ++ " hours: " ++ s
+      in
+          div [] [
+              div [] [text ("Initial dose: " ++ rangeStr initial ++ " (from base dose of " ++ rangeStr base ++ ")")]
+            , case note of
+                Nothing -> div [] []
+                Just n -> div [] [text ("Note: " ++ n)]
+            , div [] [text followingStr]
+          ]
 
 dividedDosageInstruction : Model -> Float -> Html.Html Msg
 dividedDosageInstruction model weight =
@@ -182,7 +212,7 @@ dividedDosageInstruction model weight =
         ++ " mg"
   in
       div [] [
-        p [] [text (range ++ " every 8 hours (from base dose of 3-5 mg / kg)") ]
+        p [] [text (range ++ " every 8 hours (from base dose of 3-5 mg/kg)") ]
         , p [] [text "After 1 hour, gentamicin levels should be 5-10 mg/L"]
         , p [] [text "After 24 hours, gentamicin levels should be < 2 mg/L"]
       ]
@@ -206,9 +236,9 @@ sexInput { sex } =
   ]
 
 heightInput : Model -> Html.Html Msg
-heightInput { height } =
+heightInput { height, defaultHeightUnit } =
   let
-      unit = Maybe.withDefault Inch (Maybe.map (\(Height u _) -> u) height)
+      unit = Maybe.withDefault defaultHeightUnit (Maybe.map (\(Height u _) -> u) height)
       h = Maybe.map (\(Height _ h_) -> h_) height
   in
     div [] [
