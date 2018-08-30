@@ -5743,6 +5743,10 @@ var elm$html$Html$br = _VirtualDom_node('br');
 var elm$html$Html$form = _VirtualDom_node('form');
 var author$project$Main$view = function (model) {
 	var weight = author$project$Main$isObese(model) ? author$project$Main$correctedBodyWeight(model) : author$project$Main$idealBodyWeight(model);
+	var weightStr = A2(
+		author$project$Main$maybeToString,
+		elm$core$String$fromInt,
+		A2(elm$core$Maybe$map, elm$core$Basics$round, weight));
 	var obese = function () {
 		var _n2 = author$project$Main$isObese(model);
 		if (_n2) {
@@ -5753,13 +5757,6 @@ var author$project$Main$view = function (model) {
 	}();
 	var inputs = _List_fromArray(
 		[author$project$Main$sexInput, author$project$Main$heightInput, author$project$Main$ageInput, author$project$Main$weightInput, author$project$Main$serumCreatinineInput, author$project$Main$dosageInput]);
-	var idealWeight = A2(
-		author$project$Main$maybeToString,
-		elm$core$String$fromInt,
-		A2(
-			elm$core$Maybe$map,
-			elm$core$Basics$round,
-			author$project$Main$idealBodyWeight(model)));
 	var dailyInitialDose = function () {
 		if (weight.$ === 1) {
 			return elm$core$Maybe$Nothing;
@@ -5775,13 +5772,6 @@ var author$project$Main$view = function (model) {
 					mg));
 		}
 	}();
-	var correctedWeight = A2(
-		author$project$Main$maybeToString,
-		elm$core$String$fromInt,
-		A2(
-			elm$core$Maybe$map,
-			elm$core$Basics$round,
-			author$project$Main$correctedBodyWeight(model)));
 	var clearance = A2(
 		author$project$Main$maybeToString,
 		elm$core$String$fromFloat,
@@ -5801,7 +5791,7 @@ var author$project$Main$view = function (model) {
 				[
 					elm$html$Html$text('Obese: ' + obese)
 				])),
-			author$project$Main$isObese(model) ? elm$html$Html$text('Corrected body weight: ' + (correctedWeight + ' kg')) : elm$html$Html$text('Ideal body weight: ' + (idealWeight + ' kg')),
+			author$project$Main$isObese(model) ? elm$html$Html$text('Corrected body weight: ' + (weightStr + ' kg')) : elm$html$Html$text('Ideal body weight: ' + (weightStr + ' kg')),
 			A2(
 			elm$html$Html$div,
 			_List_Nil,

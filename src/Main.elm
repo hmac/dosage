@@ -103,9 +103,8 @@ view model =
         , dosageInput
         ]
       clearance = maybeToString S.fromFloat (Maybe.map (\(Clearance c) -> c) (creatinineClearance model))
-      correctedWeight = maybeToString S.fromInt (Maybe.map round (correctedBodyWeight model))
-      idealWeight = maybeToString S.fromInt (Maybe.map round (idealBodyWeight model))
       weight = if isObese model then (correctedBodyWeight model) else (idealBodyWeight model)
+      weightStr = maybeToString S.fromInt (Maybe.map round weight)
       dailyInitialDose =
         case weight of
           Nothing -> Nothing
@@ -116,8 +115,8 @@ view model =
         [
             div [] [ text ("Obese: " ++ obese) ]
           , if isObese model
-            then text ("Corrected body weight: " ++ correctedWeight ++ " kg")
-            else text ("Ideal body weight: " ++ idealWeight ++ " kg")
+            then text ("Corrected body weight: " ++ weightStr ++ " kg")
+            else text ("Ideal body weight: " ++ weightStr ++ " kg")
           , div [] [text ("Creatinine Clearance: " ++ clearance)]
           , div [] [
               text "Dosage: "
