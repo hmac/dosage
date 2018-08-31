@@ -6,7 +6,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, text, label, select, option, p,
-                      pre, form, br, input)
+                      pre, form, br, input, table, tr, td)
 import Html.Attributes exposing (type_, checked, value, selected, class)
 import Html.Events exposing (onClick, onInput, on, targetValue)
 
@@ -102,45 +102,59 @@ view model =
   let obese = case isObese model of
         True -> "Yes"
         False -> "No"
+      mkTable : List (String, Html.Html Msg) -> Html.Html Msg
+      mkTable elems =
+        let
+            rows = List.map toRow elems
+            toRow (name, value) = tr [] [td [] [label [] [text name]], td [] [value]]
+        in
+            table [] rows
       baseInputs = [
-        sexInput
-        , heightInput
-        , ageInput
-        , weightInput
-        , serumCreatinineInput
-        , dosageInput
+        ("Sex", sexInput)
+        , ("Height", heightInput)
+        , ("Age", ageInput)
+        , ("Weight", weightInput)
+        , ("Serum Creatinine", serumCreatinineInput)
+        , ("Dosage", dosageInput)
         ]
       inputs =
         if model.dosage == Daily7mg then
-          baseInputs ++ [gentamicinLevelInput]
+          baseInputs ++ [("Gentamicin", gentamicinLevelInput)]
         else
           baseInputs
-      clearance = maybeToString S.fromFloat (Maybe.map (\(Clearance c) -> c) (creatinineClearance model))
+      clearance = maybeToString S.fromFloat (Maybe.map (\(Clearance c) -> roundFloat 2 c) (creatinineClearance model))
       weight = if isObese model then (correctedBodyWeight model) else (idealBodyWeight model)
-      weightStr = maybeToString S.fromInt (Maybe.map round weight)
+      weightStr =
+        case weight of
+          Nothing -> ""
+          Just w ->
+            if isObese model then
+              S.fromInt (round w) ++ " (corrected bodyweight)"
+            else
+              S.fromInt (round w) ++ " (ideal bodyweight)"
       dailyInitialDose =
         case weight of
           Nothing -> Nothing
           Just w ->
             let mg = List.range 3 5
             in mg |> List.map (\e -> (toFloat e) * w / 3) |> List.maximum
-      outputs =
+      output =
         [
-            div [] [ text ("Obese: " ++ obese) ]
-          , if isObese model
-            then text ("Corrected body weight: " ++ weightStr ++ " kg")
-            else text ("Ideal body weight: " ++ weightStr ++ " kg")
-          , div [] [text ("Creatinine Clearance: " ++ clearance)]
-          , div [] [
-              text "Dosage: "
+          table [] [
+              tr [] [ td [] [text "Obese"], td [] [text obese]]
+            , tr [] [ td [] [text "Weight"], td [] [text weightStr]]
+            , tr [] [ td [] [text "Creatinine Clearance"], td [] [text clearance]]
+          ]
+        , div [] [
+              label [] [ text "Dosing Regimen"]
             , dosageInstruction model
-            ]
+          ]
         ]
   in
     div [] [
-        div [] [form [] (List.map (\i -> i model) inputs)]
-      , br [] []
-      , div [] outputs
+      form [] [mkTable (List.map (\(n, f) -> (n, f model)) inputs)]
+    , br [] []
+    , div [] output
     ]
 
 dosageInstruction : Model -> Html.Html Msg
@@ -251,12 +265,9 @@ dividedDosageInstruction model weight =
 
 sexInput : Model -> Html.Html Msg
 sexInput { sex } =
-  div [] [
-      label [] [ text "Sex:" ]
-    , select [ on "change" (map (SetSex << stringToSex) targetValue) ] [
-          option [ value "male", selected (sex == Male)] [ text "Male" ]
-        , option [ value "female", selected (sex == Female) ] [ text "Female" ]
-      ]
+  select [ on "change" (map (SetSex << stringToSex) targetValue) ] [
+    option [ value "male", selected (sex == Male)] [ text "Male" ]
+  , option [ value "female", selected (sex == Female) ] [ text "Female" ]
   ]
 
 heightInput : Model -> Html.Html Msg
@@ -266,13 +277,12 @@ heightInput { height, defaultHeightUnit } =
       h = Maybe.map (\(Height _ h_) -> h_) height
   in
     div [] [
-        label [] [ text "Height:" ]
-      , input [ type_ "number", value (maybeToString S.fromInt h), onInput (SetHeightValue unit) ] []
-      , select [ on "change" (map SetHeightUnit targetValue) ] [
-            option [ selected (unit == Cm), value "cm" ] [ text "Centimetres" ]
-          , option [ selected (unit == Inch), value "inch" ] [ text "Inches" ]
-        ]
-      , text (Maybe.withDefault "" (Maybe.map (\s -> " (" ++ s ++ ")") (Maybe.map heightToString height)))
+      input [ type_ "number", value (maybeToString S.fromInt h), onInput (SetHeightValue unit) ] []
+    , select [ on "change" (map SetHeightUnit targetValue) ] [
+          option [ selected (unit == Cm), value "cm" ] [ text "Centimetres" ]
+        , option [ selected (unit == Inch), value "inch" ] [ text "Inches" ]
+      ]
+    , text (Maybe.withDefault "" (Maybe.map (\s -> " (" ++ s ++ ")") (Maybe.map heightToString height)))
     ]
 
 weightInput : Model -> Html.Html Msg
@@ -281,40 +291,36 @@ weightInput { weight } =
         Maybe.withDefault "" (Maybe.map (\(Weight w) -> S.fromInt w) weight)
   in
     div [] [
-      label [] [ text "Weight:" ]
-      , input [ type_ "number", value weightStr, onInput SetWeight ] []
-      , text " kg"
+      input [ type_ "number", value weightStr, onInput SetWeight ] []
+    , text " kg"
     ]
 
 ageInput : Model -> Html.Html Msg
 ageInput { age } =
-  let ageStr = Maybe.withDefault "" (Maybe.map (\(Age a) -> S.fromInt a) age)
+  let
+      ageStr = Maybe.withDefault "" (Maybe.map (\(Age a) -> S.fromInt a) age)
   in
     div [] [
-        label [] [ text "Age:" ]
-      , input [ type_ "number", value ageStr, onInput SetAge ] []
-      , text " years"
-      ]
+      input [ type_ "number", value ageStr, onInput SetAge ] []
+    , text " years"
+    ]
 
 serumCreatinineInput : Model -> Html.Html Msg
 serumCreatinineInput { serumCreatinine } =
-  let scStr = Maybe.withDefault "" (Maybe.map (\(SerumCreatinine sc) -> S.fromFloat sc) serumCreatinine)
+  let
+      scStr = Maybe.withDefault "" (Maybe.map (\(SerumCreatinine sc) -> S.fromFloat sc) serumCreatinine)
   in
     div [] [
-        label [] [ text "Serum Creatinine:" ]
-      , input [ type_ "number", value scStr, onInput SetSerumCreatinine ] []
-      , text " µmol/L"
-      ]
+      input [ type_ "number", onInput SetSerumCreatinine ] []
+    , text " µmol/L"
+    ]
 
 dosageInput : Model -> Html.Html Msg
 dosageInput { dosage } =
-  div [] [
-      label [] [ text "Dosage:" ]
-    , select [ on "change" (map (SetDosage << stringToDosage) targetValue) ] [
-          option [ value "daily_5mg", selected (dosage == Daily5mg) ] [ text "Daily (5 mg)" ]
-        , option [ value "daily_7mg", selected (dosage == Daily7mg)] [ text "Daily (7 mg)" ]
-        , option [ value "divided", selected (dosage == Divided) ] [ text "Divided" ]
-      ]
+  select [ on "change" (map (SetDosage << stringToDosage) targetValue) ] [
+    option [ value "daily_5mg", selected (dosage == Daily5mg) ] [ text "Daily (5 mg)" ]
+  , option [ value "daily_7mg", selected (dosage == Daily7mg)] [ text "Daily (7 mg)" ]
+  , option [ value "divided", selected (dosage == Divided) ] [ text "Divided" ]
   ]
 
 gentamicinLevelInput : Model -> Html.Html Msg
@@ -327,40 +333,38 @@ gentamicinLevelInput { gentamicinMeasurement } =
           levelHandler s = SetGentamicinMeasurement (Just hour) (S.toFloat s)
       in
         div [] [
-          label [] [ text "Gentamicin level:" ]
-          , select [ on "change" hourHandler ] [
-              option [ value "6", selected (hour == 6) ] [ text "6 hours" ]
-            , option [ value "7", selected (hour == 7) ] [ text "7 hours" ]
-            , option [ value "8", selected (hour == 8) ] [ text "8 hours" ]
-            , option [ value "9", selected (hour == 9) ] [ text "9 hours" ]
-            , option [ value "10", selected (hour == 10) ] [ text "10 hours" ]
-            , option [ value "11", selected (hour == 11) ] [ text "11 hours" ]
-            , option [ value "12", selected (hour == 12) ] [ text "12 hours" ]
-            , option [ value "13", selected (hour == 13) ] [ text "13 hours" ]
-            , option [ value "14", selected (hour == 14) ] [ text "14 hours" ]
-          ]
-          , input [ type_ "number", value "", onInput levelHandler ] []
-          , text " µg/mL"
+          select [ on "change" hourHandler ] [
+            option [ value "6", selected (hour == 6) ] [ text "6 hours" ]
+          , option [ value "7", selected (hour == 7) ] [ text "7 hours" ]
+          , option [ value "8", selected (hour == 8) ] [ text "8 hours" ]
+          , option [ value "9", selected (hour == 9) ] [ text "9 hours" ]
+          , option [ value "10", selected (hour == 10) ] [ text "10 hours" ]
+          , option [ value "11", selected (hour == 11) ] [ text "11 hours" ]
+          , option [ value "12", selected (hour == 12) ] [ text "12 hours" ]
+          , option [ value "13", selected (hour == 13) ] [ text "13 hours" ]
+          , option [ value "14", selected (hour == 14) ] [ text "14 hours" ]
+        ]
+        , input [ type_ "number", onInput levelHandler ] []
+        , text " µg/mL"
         ]
     Just level ->
       let hourHandler = map (\hStr -> SetGentamicinMeasurement (S.toInt hStr) (Just level)) targetValue
           levelHandler s = SetGentamicinMeasurement (Just hour) (S.toFloat s)
       in
         div [] [
-          label [] [ text "Gentamicin level:" ]
-          , select [ on "change" hourHandler ] [
-              option [ value "6", selected (hour == 6) ] [ text "6 hours" ]
-            , option [ value "7", selected (hour == 7) ] [ text "7 hours" ]
-            , option [ value "8", selected (hour == 8) ] [ text "8 hours" ]
-            , option [ value "9", selected (hour == 9) ] [ text "9 hours" ]
-            , option [ value "10", selected (hour == 10) ] [ text "10 hours" ]
-            , option [ value "11", selected (hour == 11) ] [ text "11 hours" ]
-            , option [ value "12", selected (hour == 12) ] [ text "12 hours" ]
-            , option [ value "13", selected (hour == 13) ] [ text "13 hours" ]
-            , option [ value "14", selected (hour == 14) ] [ text "14 hours" ]
-          ]
-          , input [ type_ "number", value (S.fromFloat level), onInput levelHandler ] []
-          , text " µg/mL"
+          select [ on "change" hourHandler ] [
+            option [ value "6", selected (hour == 6) ] [ text "6 hours" ]
+          , option [ value "7", selected (hour == 7) ] [ text "7 hours" ]
+          , option [ value "8", selected (hour == 8) ] [ text "8 hours" ]
+          , option [ value "9", selected (hour == 9) ] [ text "9 hours" ]
+          , option [ value "10", selected (hour == 10) ] [ text "10 hours" ]
+          , option [ value "11", selected (hour == 11) ] [ text "11 hours" ]
+          , option [ value "12", selected (hour == 12) ] [ text "12 hours" ]
+          , option [ value "13", selected (hour == 13) ] [ text "13 hours" ]
+          , option [ value "14", selected (hour == 14) ] [ text "14 hours" ]
+        ]
+        , input [ type_ "number", onInput levelHandler ] []
+        , text " µg/mL"
         ]
 
 -- Specific Utils
@@ -485,3 +489,7 @@ maybeToString f s =
   case s of
     Nothing -> ""
     Just s_ -> f s_
+
+-- Round a Float to the specified number of decimal places
+roundFloat : Int -> Float -> Float
+roundFloat dp x = (toFloat (round (x * 100))) / 100
