@@ -287,7 +287,7 @@ heightInput { height, defaultHeightUnit } =
       h = Maybe.map (\(Height _ h_) -> h_) height
   in
     div [] [
-      input [ type_ "number", value (maybeToString S.fromInt h), onInput (SetHeightValue unit) ] []
+      input [ type_ "number", onInput (SetHeightValue unit) ] []
     , select [ on "change" (map SetHeightUnit targetValue) ] [
           option [ selected (unit == Cm), value "cm" ] [ text "Centimetres" ]
         , option [ selected (unit == Inch), value "inch" ] [ text "Inches" ]
@@ -301,7 +301,7 @@ weightInput { weight } =
         Maybe.withDefault "" (Maybe.map (\(Weight w) -> S.fromInt w) weight)
   in
     div [] [
-      input [ type_ "number", value weightStr, onInput SetWeight ] []
+      input [ type_ "number", onInput SetWeight ] []
     , text " kg"
     ]
 
@@ -311,7 +311,7 @@ ageInput { age } =
       ageStr = Maybe.withDefault "" (Maybe.map (\(Age a) -> S.fromInt a) age)
   in
     div [] [
-      input [ type_ "number", value ageStr, onInput SetAge ] []
+      input [ type_ "number", onInput SetAge ] []
     , text " years"
     ]
 
