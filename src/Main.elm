@@ -6,7 +6,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, text, label, select, option, p,
-                      pre, form, br, input, table, tr, td)
+                      pre, form, br, input, table, tr, td, h4)
 import Html.Attributes exposing (type_, checked, value, selected, class)
 import Html.Events exposing (onClick, onInput, on, targetValue)
 
@@ -140,19 +140,21 @@ view model =
             in mg |> List.map (\e -> (toFloat e) * w / 3) |> List.maximum
       output =
         [
-          table [] [
+          h4 [] [ text "Calculated attributes"]
+        , table [] [
               tr [] [ td [] [text "Obese"], td [] [text obese]]
             , tr [] [ td [] [text "Weight"], td [] [text weightStr]]
             , tr [] [ td [] [text "Creatinine Clearance"], td [] [text clearance]]
           ]
         , div [] [
-              label [] [ text "Dosing Regimen"]
+              h4 [] [ text "Dosing Regimen"]
             , dosageInstruction model
           ]
         ]
   in
     div [] [
-      form [] [mkTable (List.map (\(n, f) -> (n, f model)) inputs)]
+      h4 [] [text "Enter patient details"]
+    , form [] [mkTable (List.map (\(n, f) -> (n, f model)) inputs)]
     , br [] []
     , div [] output
     ]
@@ -160,13 +162,28 @@ view model =
 dosageInstruction : Model -> Html.Html Msg
 dosageInstruction model =
   let weight = if isObese model then correctedBodyWeight else idealBodyWeight
-  in case (weight model) of
-      Nothing -> div [] []
-      Just w ->
-        case model.dosage of
-            Daily5mg -> daily5mgDosageInstruction model w
-            Daily7mg -> daily7mgDosageInstruction model w
-            Divided -> dividedDosageInstruction model w
+      (initial, note, following) = case (weight model) of
+        Nothing -> ("", "", "")
+        Just w ->
+          case model.dosage of
+              Daily5mg -> daily5mgDosageInstruction model w
+              Daily7mg -> daily7mgDosageInstruction model w
+              Divided -> dividedDosageInstruction model w
+  in
+    table [] [
+      tr [] [
+        td [] [text "Initial dose"]
+      , td [] [text initial]
+      ]
+    , tr [] [
+        td [] [text "Note"]
+      , td [] [text note]
+      ]
+    , tr [] [
+        td [] [text "Further doses"]
+      , td [] [text following]
+      ]
+    ]
 -- Dosage
 
 -- Regimen describes the dosing regimen (how much to give and when)
@@ -200,10 +217,10 @@ daily model weight =
       in
           Just { base = perKg, initial = (min, max), following = following, note = note}
 
-daily5mgDosageInstruction : Model -> Float -> Html.Html Msg
+daily5mgDosageInstruction : Model -> Float -> (String, String, String)
 daily5mgDosageInstruction model weight =
   case daily model weight of
-    Nothing -> div [] []
+    Nothing -> ("", "", "")
     Just { base, initial, following, note } ->
       let
         initialStr = let (min, _) = initial in (S.fromInt min) ++ "mg"
@@ -212,20 +229,14 @@ daily5mgDosageInstruction model weight =
           (hour, Dose) -> "Dose every " ++ S.fromInt hour ++ " hours"
           (hour, Other s) -> "At " ++ S.fromInt hour ++ " hours: " ++ s
       in
-          div [] [
-              div [] [text ("Initial dose: " ++ initialStr)]
-            , case note of
-                Nothing -> div [] []
-                Just n -> div [] [text ("Note: " ++ n)]
-            , div [] [text followingStr]
-          ]
+        (initialStr, Maybe.withDefault "" note, followingStr)
 
 -- TODO
 -- Display nomogram and show where measurement lies on it
-daily7mgDosageInstruction : Model -> Float -> Html.Html Msg
+daily7mgDosageInstruction : Model -> Float -> (String, String, String)
 daily7mgDosageInstruction model weight =
   case daily model weight of
-    Nothing -> div [] []
+    Nothing -> ("", "", "")
     Just { base, initial } ->
       let
         (hour, mLevel) = model.gentamicinMeasurement
@@ -239,13 +250,9 @@ daily7mgDosageInstruction model weight =
             Just H24 -> "Give next dose 24 hours after initial dose"
             Just Custom -> "Resume regimen once gentamicin levels fall to < 1mg/L"
       in
-        div [] [
-          div [] [text ("Initial dose: " ++ initialStr)]
-          , div [] [text ("Take gentamicin levels 6-14 hours after first dose")]
-          , div [] [text nextDose ]
-        ]
+        (initialStr, "Take gentamicin levels 6-14 hours after first dose", nextDose)
 
-dividedDosageInstruction : Model -> Float -> Html.Html Msg
+dividedDosageInstruction : Model -> Float -> (String, String, String)
 dividedDosageInstruction model weight =
   let
       (min, max) = (3 * weight / 3, 5 * weight / 3)
@@ -255,11 +262,14 @@ dividedDosageInstruction model weight =
         ++ (max |> round |> S.fromInt)
         ++ " mg"
   in
-      p [] [
-          div [] [text (range ++ " every 8 hours (from base dose of 3-5 mg/kg)") ]
-        , div [] [text "After 1 hour, gentamicin levels should be 5-10 mg/L"]
-        , div [] [text "After 24 hours, gentamicin levels should be < 2 mg/L"]
+    (
+      range ++ " every 8 hours (from base dose of 3-5 mg/kg"
+    , ""
+    , S.join "\n" [
+      "After 1 hour, gentamicin levels should be 5-10 mg/L"
+      , "After 24 hours, gentamicin levels should be < 2 mg/L"
       ]
+    )
 
 -- Inputs
 
