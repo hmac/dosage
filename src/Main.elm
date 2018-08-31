@@ -33,6 +33,7 @@ type alias Model = {
     , weight : Maybe Weight
     , serumCreatinine : Maybe SerumCreatinine
     , dosage : Dosage
+    , gentamicinMeasurement : (Int, Maybe Float)
   }
 
 type Sex = Male | Female
@@ -53,6 +54,7 @@ init = {
     , weight = Nothing
     , serumCreatinine = Nothing
     , dosage = Daily5mg
+    , gentamicinMeasurement = (6, Nothing)
   }
 
 type Msg = SetSex (Maybe Sex)
@@ -62,6 +64,7 @@ type Msg = SetSex (Maybe Sex)
          | SetAge String
          | SetSerumCreatinine String
          | SetDosage (Maybe Dosage)
+         | SetGentamicinMeasurement (Maybe Int) (Maybe Float)
 
 update : Msg -> Model -> Model
 update msg model = case msg of
@@ -88,13 +91,18 @@ update msg model = case msg of
     case mDosage of
       Just d -> { model | dosage = d }
       Nothing -> model
+  SetGentamicinMeasurement mHour mLevel ->
+    case mHour of
+      Nothing -> model
+      Just hour ->
+        { model | gentamicinMeasurement = (hour, mLevel) }
 
 view : Model -> Html.Html Msg
 view model =
   let obese = case isObese model of
         True -> "Yes"
         False -> "No"
-      inputs = [
+      baseInputs = [
         sexInput
         , heightInput
         , ageInput
@@ -102,6 +110,11 @@ view model =
         , serumCreatinineInput
         , dosageInput
         ]
+      inputs =
+        if model.dosage == Daily7mg then
+          baseInputs ++ [gentamicinLevelInput]
+        else
+          baseInputs
       clearance = maybeToString S.fromFloat (Maybe.map (\(Clearance c) -> c) (creatinineClearance model))
       weight = if isObese model then (correctedBodyWeight model) else (idealBodyWeight model)
       weightStr = maybeToString S.fromInt (Maybe.map round weight)
@@ -140,7 +153,6 @@ dosageInstruction model =
             Daily5mg -> daily5mgDosageInstruction model w
             Daily7mg -> daily7mgDosageInstruction model w
             Divided -> dividedDosageInstruction model w
-
 -- Dosage
 
 -- Regimen describes the dosing regimen (how much to give and when)
@@ -195,21 +207,28 @@ daily5mgDosageInstruction model weight =
           ]
 
 -- TODO
--- if using 7 mg/kg daily dose (hartford nomogram):
--- take gentamicin level 6-14 hours after first dose
--- compare level with hartford nomogram to determine next dosage interval
+-- Display nomogram and show where measurement lies on it
 daily7mgDosageInstruction : Model -> Float -> Html.Html Msg
 daily7mgDosageInstruction model weight =
   case daily model weight of
     Nothing -> div [] []
     Just { base, initial } ->
       let
+        (hour, mLevel) = model.gentamicinMeasurement
         initialStr = let (_, max) = initial in (S.fromInt max) ++ "mg"
+        area = Maybe.map (nomogramArea (toFloat hour)) mLevel
+        nextDose =
+          case area of
+            Nothing -> ""
+            Just H48 -> "Give next dose 48 hours after initial dose"
+            Just H36 -> "Give next dose 36 hours after initial dose"
+            Just H24 -> "Give next dose 24 hours after initial dose"
+            Just Custom -> "Resume regimen once gentamicin levels fall to < 1mg/L"
       in
         div [] [
           div [] [text ("Initial dose: " ++ initialStr)]
           , div [] [text ("Take gentamicin levels 6-14 hours after first dose")]
-          , div [] [text ("Compare level with Hartford nomogram to determine next dosage interval")]
+          , div [] [text nextDose ]
         ]
 
 dividedDosageInstruction : Model -> Float -> Html.Html Msg
@@ -233,7 +252,7 @@ dividedDosageInstruction model weight =
 sexInput : Model -> Html.Html Msg
 sexInput { sex } =
   div [] [
-      label [] [ text "Sex: " ]
+      label [] [ text "Sex:" ]
     , select [ on "change" (map (SetSex << stringToSex) targetValue) ] [
           option [ value "male", selected (sex == Male)] [ text "Male" ]
         , option [ value "female", selected (sex == Female) ] [ text "Female" ]
@@ -247,7 +266,7 @@ heightInput { height, defaultHeightUnit } =
       h = Maybe.map (\(Height _ h_) -> h_) height
   in
     div [] [
-        label [] [ text "Height: " ]
+        label [] [ text "Height:" ]
       , input [ type_ "number", value (maybeToString S.fromInt h), onInput (SetHeightValue unit) ] []
       , select [ on "change" (map SetHeightUnit targetValue) ] [
             option [ selected (unit == Cm), value "cm" ] [ text "Centimetres" ]
@@ -262,7 +281,7 @@ weightInput { weight } =
         Maybe.withDefault "" (Maybe.map (\(Weight w) -> S.fromInt w) weight)
   in
     div [] [
-      label [] [ text "Weight: " ]
+      label [] [ text "Weight:" ]
       , input [ type_ "number", value weightStr, onInput SetWeight ] []
       , text " kg"
     ]
@@ -272,7 +291,7 @@ ageInput { age } =
   let ageStr = Maybe.withDefault "" (Maybe.map (\(Age a) -> S.fromInt a) age)
   in
     div [] [
-        label [] [ text "Age: " ]
+        label [] [ text "Age:" ]
       , input [ type_ "number", value ageStr, onInput SetAge ] []
       , text " years"
       ]
@@ -282,7 +301,7 @@ serumCreatinineInput { serumCreatinine } =
   let scStr = Maybe.withDefault "" (Maybe.map (\(SerumCreatinine sc) -> S.fromFloat sc) serumCreatinine)
   in
     div [] [
-        label [] [ text "Serum Creatinine: " ]
+        label [] [ text "Serum Creatinine:" ]
       , input [ type_ "number", value scStr, onInput SetSerumCreatinine ] []
       , text " µmol/L"
       ]
@@ -290,13 +309,59 @@ serumCreatinineInput { serumCreatinine } =
 dosageInput : Model -> Html.Html Msg
 dosageInput { dosage } =
   div [] [
-      label [] [ text "Dosage: " ]
+      label [] [ text "Dosage:" ]
     , select [ on "change" (map (SetDosage << stringToDosage) targetValue) ] [
           option [ value "daily_5mg", selected (dosage == Daily5mg) ] [ text "Daily (5 mg)" ]
         , option [ value "daily_7mg", selected (dosage == Daily7mg)] [ text "Daily (7 mg)" ]
         , option [ value "divided", selected (dosage == Divided) ] [ text "Divided" ]
       ]
   ]
+
+gentamicinLevelInput : Model -> Html.Html Msg
+gentamicinLevelInput { gentamicinMeasurement } =
+  let (hour, mLevel) = gentamicinMeasurement
+  in
+    case mLevel of
+    Nothing ->
+      let hourHandler = map (\hStr -> SetGentamicinMeasurement (S.toInt hStr) Nothing) targetValue
+          levelHandler s = SetGentamicinMeasurement (Just hour) (S.toFloat s)
+      in
+        div [] [
+          label [] [ text "Gentamicin level:" ]
+          , select [ on "change" hourHandler ] [
+              option [ value "6", selected (hour == 6) ] [ text "6 hours" ]
+            , option [ value "7", selected (hour == 7) ] [ text "7 hours" ]
+            , option [ value "8", selected (hour == 8) ] [ text "8 hours" ]
+            , option [ value "9", selected (hour == 9) ] [ text "9 hours" ]
+            , option [ value "10", selected (hour == 10) ] [ text "10 hours" ]
+            , option [ value "11", selected (hour == 11) ] [ text "11 hours" ]
+            , option [ value "12", selected (hour == 12) ] [ text "12 hours" ]
+            , option [ value "13", selected (hour == 13) ] [ text "13 hours" ]
+            , option [ value "14", selected (hour == 14) ] [ text "14 hours" ]
+          ]
+          , input [ type_ "number", value "", onInput levelHandler ] []
+          , text " µg/mL"
+        ]
+    Just level ->
+      let hourHandler = map (\hStr -> SetGentamicinMeasurement (S.toInt hStr) (Just level)) targetValue
+          levelHandler s = SetGentamicinMeasurement (Just hour) (S.toFloat s)
+      in
+        div [] [
+          label [] [ text "Gentamicin level:" ]
+          , select [ on "change" hourHandler ] [
+              option [ value "6", selected (hour == 6) ] [ text "6 hours" ]
+            , option [ value "7", selected (hour == 7) ] [ text "7 hours" ]
+            , option [ value "8", selected (hour == 8) ] [ text "8 hours" ]
+            , option [ value "9", selected (hour == 9) ] [ text "9 hours" ]
+            , option [ value "10", selected (hour == 10) ] [ text "10 hours" ]
+            , option [ value "11", selected (hour == 11) ] [ text "11 hours" ]
+            , option [ value "12", selected (hour == 12) ] [ text "12 hours" ]
+            , option [ value "13", selected (hour == 13) ] [ text "13 hours" ]
+            , option [ value "14", selected (hour == 14) ] [ text "14 hours" ]
+          ]
+          , input [ type_ "number", value (S.fromFloat level), onInput levelHandler ] []
+          , text " µg/mL"
+        ]
 
 -- Specific Utils
 
@@ -387,6 +452,31 @@ creatinineClearance { sex, age, weight, serumCreatinine } =
           Male -> Just (Clearance (baseClearance * 1.23))
           Female -> Just (Clearance (baseClearance * 1.04))
     _ -> Nothing
+
+-- A line on (x,y) where x = time between start of infusion and sample draw
+--                       y = concentration measured by draw
+nomogram24h : Float -> Float
+nomogram24h x = 11.625 - (0.6875 * x)
+
+nomogram36h : Float -> Float
+nomogram36h x = 17 - x
+
+nomogram48h : Float -> Float
+nomogram48h x = 19 - x
+
+type NomogramArea = H24 | H36 | H48 | Custom
+
+-- Given an (x,y) point on the nomogram, calculate what area it lies in
+nomogramArea : Float -> Float -> NomogramArea
+nomogramArea x y =
+  if y > nomogram48h x then
+    Custom -- patient kidney function is too poor - can't use nomogram
+  else if y > nomogram36h x then
+    H48
+  else if y > nomogram24h x then
+    H36
+  else
+    H24
 
 -- Generic Utils
 
