@@ -4522,16 +4522,7 @@ var author$project$Main$Daily7mg = 1;
 var author$project$Main$SetAge = function (a) {
 	return {$: 4, a: a};
 };
-var elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
-var elm$core$String$fromInt = _String_fromNumber;
+var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$False = 1;
 var elm$core$Basics$True = 0;
 var elm$core$Result$isOk = function (result) {
@@ -4734,7 +4725,6 @@ var elm$json$Json$Decode$OneOf = function (a) {
 	return {$: 2, a: a};
 };
 var elm$core$Basics$and = _Basics_and;
-var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$or = _Basics_or;
 var elm$core$Char$toCode = _Char_toCode;
 var elm$core$Char$isLower = function (_char) {
@@ -4799,6 +4789,7 @@ var elm$core$List$indexedMap = F2(
 			xs);
 	});
 var elm$core$String$all = _String_all;
+var elm$core$String$fromInt = _String_fromNumber;
 var elm$core$String$join = F2(
 	function (sep, chunks) {
 		return A2(
@@ -4937,10 +4928,7 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
-var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$input = _VirtualDom_node('input');
-var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
 var elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -4949,8 +4937,35 @@ var elm$html$Html$Attributes$stringProperty = F2(
 			key,
 			elm$json$Json$Encode$string(string));
 	});
-var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
+var elm$html$Html$Attributes$min = elm$html$Html$Attributes$stringProperty('min');
+var elm$html$Html$Attributes$pattern = elm$html$Html$Attributes$stringProperty('pattern');
 var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
+var author$project$Main$numericInput = F2(
+	function (attrs, children) {
+		var defaultAttrs = _List_fromArray(
+			[
+				elm$html$Html$Attributes$type_('number'),
+				elm$html$Html$Attributes$min('0'),
+				elm$html$Html$Attributes$pattern('[0-9]*')
+			]);
+		return A2(
+			elm$html$Html$input,
+			_Utils_ap(defaultAttrs, attrs),
+			children);
+	});
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var elm$html$Html$div = _VirtualDom_node('div');
+var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -5061,10 +5076,9 @@ var author$project$Main$ageInput = function (_n0) {
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$input,
+				author$project$Main$numericInput,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$type_('number'),
 						elm$html$Html$Attributes$class('form-control-lg'),
 						elm$html$Html$Events$onInput(author$project$Main$SetAge)
 					]),
@@ -5554,10 +5568,9 @@ var author$project$Main$gentamicinLevelInput = function (_n0) {
 			_List_fromArray(
 				[
 					A2(
-					elm$html$Html$input,
+					author$project$Main$numericInput,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$type_('number'),
 							elm$html$Html$Attributes$class('form-control-lg'),
 							elm$html$Html$Events$onInput(levelHandler)
 						]),
@@ -5717,10 +5730,9 @@ var author$project$Main$gentamicinLevelInput = function (_n0) {
 			_List_fromArray(
 				[
 					A2(
-					elm$html$Html$input,
+					author$project$Main$numericInput,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$type_('number'),
 							elm$html$Html$Attributes$class('form-control-lg'),
 							elm$html$Html$Events$onInput(levelHandler)
 						]),
@@ -5911,10 +5923,9 @@ var author$project$Main$heightInput = function (_n0) {
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$input,
+				author$project$Main$numericInput,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$type_('number'),
 						elm$html$Html$Attributes$class('form-control-lg'),
 						elm$html$Html$Events$onInput(
 						author$project$Main$SetHeightValue(unit))
@@ -6022,10 +6033,9 @@ var author$project$Main$serumCreatinineInput = function (_n0) {
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$input,
+				author$project$Main$numericInput,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$type_('number'),
 						elm$html$Html$Attributes$class('form-control-lg'),
 						elm$html$Html$Events$onInput(author$project$Main$SetSerumCreatinine)
 					]),
@@ -6130,10 +6140,9 @@ var author$project$Main$weightInput = function (_n0) {
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$input,
+				author$project$Main$numericInput,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$type_('number'),
 						elm$html$Html$Attributes$class('form-control-lg'),
 						elm$html$Html$Events$onInput(author$project$Main$SetWeight)
 					]),

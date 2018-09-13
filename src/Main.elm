@@ -25,7 +25,15 @@ import Html
         , text
         , tr
         )
-import Html.Attributes exposing (checked, class, selected, type_, value)
+import Html.Attributes
+    exposing
+        ( checked
+        , class
+        , pattern
+        , selected
+        , type_
+        , value
+        )
 import Html.Events exposing (on, onClick, onInput, targetValue)
 import Json.Decode as Json exposing (andThen, map)
 import List
@@ -497,7 +505,7 @@ heightInput { height, defaultHeightUnit } =
             Maybe.map (\(Height _ h_) -> h_) height
     in
     div [ class "input-group" ]
-        [ input [ type_ "number", class "form-control-lg", onInput (SetHeightValue unit) ] []
+        [ numericInput [ class "form-control-lg", onInput (SetHeightValue unit) ] []
         , div [ class "input-group-append" ]
             [ div [ class "input-group-text" ]
                 [ text (Maybe.withDefault "" (Maybe.map (\s -> " (" ++ s ++ ")") (Maybe.map heightToString height)))
@@ -517,7 +525,7 @@ weightInput { weight } =
             Maybe.withDefault "" (Maybe.map (\(Weight w) -> S.fromInt w) weight)
     in
     div [ class "input-group" ]
-        [ input [ type_ "number", class "form-control-lg", onInput SetWeight ] []
+        [ numericInput [ class "form-control-lg", onInput SetWeight ] []
         , div [ class "input-group-append" ]
             [ div [ class "input-group-text" ] [ text "kg" ] ]
         ]
@@ -530,7 +538,7 @@ ageInput { age } =
             Maybe.withDefault "" (Maybe.map (\(Age a) -> S.fromInt a) age)
     in
     div [ class "input-group" ]
-        [ input [ type_ "number", class "form-control-lg", onInput SetAge ] []
+        [ numericInput [ class "form-control-lg", onInput SetAge ] []
         , div [ class "input-group-append" ]
             [ div [ class "input-group-text" ] [ text "years" ]
             ]
@@ -544,7 +552,7 @@ serumCreatinineInput { serumCreatinine } =
             Maybe.withDefault "" (Maybe.map (\(SerumCreatinine sc) -> S.fromFloat sc) serumCreatinine)
     in
     div [ class "input-group" ]
-        [ input [ type_ "number", class "form-control-lg", onInput SetSerumCreatinine ] []
+        [ numericInput [ class "form-control-lg", onInput SetSerumCreatinine ] []
         , div [ class "input-group-append" ]
             [ div [ class "input-group-text" ] [ text " µmol/L" ] ]
         ]
@@ -575,7 +583,7 @@ gentamicinLevelInput { gentamicinMeasurement } =
                     SetGentamicinMeasurement (Just hour) (S.toFloat s)
             in
             div [ class "input-group" ]
-                [ input [ type_ "number", class "form-control-lg", onInput levelHandler ] []
+                [ numericInput [ class "form-control-lg", onInput levelHandler ] []
                 , div [ class "input-group-append" ]
                     [ div [ class "input-group-text" ] [ text " µg/mL" ]
                     , select [ class "form-control-lg", on "change" hourHandler ]
@@ -601,7 +609,7 @@ gentamicinLevelInput { gentamicinMeasurement } =
                     SetGentamicinMeasurement (Just hour) (S.toFloat s)
             in
             div [ class "input-group" ]
-                [ input [ type_ "number", class "form-control-lg", onInput levelHandler ] []
+                [ numericInput [ class "form-control-lg", onInput levelHandler ] []
                 , div [ class "input-group-append" ]
                     [ div [ class "input-group-text" ] [ text "µg/mL" ]
                     , select [ class "form-control-lg", on "change" hourHandler ]
@@ -617,6 +625,15 @@ gentamicinLevelInput { gentamicinMeasurement } =
                         ]
                     ]
                 ]
+
+
+numericInput : List (Html.Attribute a) -> List (Html.Html a) -> Html.Html a
+numericInput attrs children =
+    let
+        defaultAttrs =
+            [ type_ "number", Html.Attributes.min "0", pattern "[0-9]*" ]
+    in
+    input (defaultAttrs ++ attrs) children
 
 
 
