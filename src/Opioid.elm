@@ -178,7 +178,7 @@ explain from fromAmount to =
         , text " mg of "
         , strong [] [ text "Morphine" ]
         , text " is equivalent to "
-        , code [] [ text (equationFromMorphine 5 to) ]
+        , code [] [ text (equationFromMorphine (fromAmount * potency from) to) ]
         , text " mg of "
         , strong [] [ text (Drug.toString to) ]
         ]

@@ -6658,7 +6658,10 @@ var author$project$Opioid$explain = F3(
 					_List_fromArray(
 						[
 							elm$html$Html$text(
-							A2(author$project$Opioid$equationFromMorphine, 5, to))
+							A2(
+								author$project$Opioid$equationFromMorphine,
+								fromAmount * author$project$Opioid$potency(from),
+								to))
 						])),
 					elm$html$Html$text(' mg of '),
 					A2(
