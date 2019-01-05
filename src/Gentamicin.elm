@@ -501,7 +501,7 @@ setGentamicinMeasurement model mHour mLevel =
 
 sexInput : (Model -> msg) -> Model -> Html.Html msg
 sexInput update model =
-    select [ class "form-control-lg", on "change" (map (update << setSex model << stringToSex) targetValue) ]
+    select [ class "form-control", on "change" (map (update << setSex model << stringToSex) targetValue) ]
         [ option [ value "male", selected (model.sex == Male) ] [ text "Male" ]
         , option [ value "female", selected (model.sex == Female) ] [ text "Female" ]
         ]
@@ -517,12 +517,12 @@ heightInput update model =
             Maybe.map (\(Height _ h_) -> h_) model.height
     in
     div [ class "input-group" ]
-        [ numericInput [ class "form-control-lg", onInput (update << setHeightValue model unit) ] []
+        [ numericInput [ class "form-control", onInput (update << setHeightValue model unit) ] []
         , div [ class "input-group-append" ]
             [ div [ class "input-group-text" ]
                 [ text (Maybe.withDefault "" (Maybe.map (\s -> " (" ++ s ++ ")") (Maybe.map heightToString model.height)))
                 ]
-            , select [ class "form-control-lg", on "change" (map (update << setHeightUnit model) targetValue) ]
+            , select [ class "form-control", on "change" (map (update << setHeightUnit model) targetValue) ]
                 [ option [ selected (unit == Cm), value "cm" ] [ text "Centimetres" ]
                 , option [ selected (unit == Inch), value "inch" ] [ text "Inches" ]
                 ]
@@ -537,7 +537,7 @@ weightInput update model =
             Maybe.withDefault "" (Maybe.map (\(Weight w) -> S.fromInt w) model.weight)
     in
     div [ class "input-group" ]
-        [ numericInput [ class "form-control-lg", onInput (update << setWeight model) ] []
+        [ numericInput [ class "form-control", onInput (update << setWeight model) ] []
         , div [ class "input-group-append" ]
             [ div [ class "input-group-text" ] [ text "kg" ] ]
         ]
@@ -550,7 +550,7 @@ ageInput update model =
             Maybe.withDefault "" (Maybe.map (\(Age a) -> S.fromInt a) model.age)
     in
     div [ class "input-group" ]
-        [ numericInput [ class "form-control-lg", onInput (update << setAge model) ] []
+        [ numericInput [ class "form-control", onInput (update << setAge model) ] []
         , div [ class "input-group-append" ]
             [ div [ class "input-group-text" ] [ text "years" ]
             ]
@@ -564,7 +564,7 @@ serumCreatinineInput update model =
             Maybe.withDefault "" (Maybe.map (\(SerumCreatinine sc) -> S.fromFloat sc) model.serumCreatinine)
     in
     div [ class "input-group" ]
-        [ numericInput [ class "form-control-lg", onInput (update << setSerumCreatinine model) ] []
+        [ numericInput [ class "form-control", onInput (update << setSerumCreatinine model) ] []
         , div [ class "input-group-append" ]
             [ div [ class "input-group-text" ] [ text " µmol/L" ] ]
         ]
@@ -576,7 +576,7 @@ dosageInput update model =
         dosage =
             model.dosage
     in
-    select [ class "form-control-lg", on "change" (map (update << setDosage model << stringToDosage) targetValue) ]
+    select [ class "form-control", on "change" (map (update << setDosage model << stringToDosage) targetValue) ]
         [ option [ value "daily_5mg", selected (dosage == Daily5mg) ] [ text "Daily (5 mg)" ]
         , option [ value "daily_7mg", selected (dosage == Daily7mg) ] [ text "Daily (7 mg)" ]
         , option [ value "divided", selected (dosage == Divided) ] [ text "Divided" ]
@@ -599,10 +599,10 @@ gentamicinLevelInput update model =
                     update (setGentamicinMeasurement model (Just hour) (S.toFloat s))
             in
             div [ class "input-group" ]
-                [ numericInput [ class "form-control-lg", onInput levelHandler ] []
+                [ numericInput [ class "form-control", onInput levelHandler ] []
                 , div [ class "input-group-append" ]
                     [ div [ class "input-group-text" ] [ text " µg/mL" ]
-                    , select [ class "form-control-lg", on "change" hourHandler ]
+                    , select [ class "form-control", on "change" hourHandler ]
                         [ option [ value "6", selected (hour == 6) ] [ text "after 6 hours" ]
                         , option [ value "7", selected (hour == 7) ] [ text "after 7 hours" ]
                         , option [ value "8", selected (hour == 8) ] [ text "after 8 hours" ]
@@ -627,10 +627,10 @@ gentamicinLevelInput update model =
                     update (setGentamicinMeasurement model (Just hour) (S.toFloat s))
             in
             div [ class "input-group" ]
-                [ numericInput [ class "form-control-lg", onInput levelHandler ] []
+                [ numericInput [ class "form-control", onInput levelHandler ] []
                 , div [ class "input-group-append" ]
                     [ div [ class "input-group-text" ] [ text "µg/mL" ]
-                    , select [ class "form-control-lg", on "change" hourHandler ]
+                    , select [ class "form-control", on "change" hourHandler ]
                         [ option [ value "6", selected (hour == 6) ] [ text "after 6 hours" ]
                         , option [ value "7", selected (hour == 7) ] [ text "after 7 hours" ]
                         , option [ value "8", selected (hour == 8) ] [ text "after 8 hours" ]

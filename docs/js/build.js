@@ -4973,7 +4973,7 @@ var author$project$Gentamicin$ageInput = F2(
 					author$project$Gentamicin$numericInput,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$class('form-control-lg'),
+							elm$html$Html$Attributes$class('form-control'),
 							elm$html$Html$Events$onInput(
 							A2(
 								elm$core$Basics$composeL,
@@ -5122,7 +5122,7 @@ var author$project$Gentamicin$dosageInput = F2(
 			elm$html$Html$select,
 			_List_fromArray(
 				[
-					elm$html$Html$Attributes$class('form-control-lg'),
+					elm$html$Html$Attributes$class('form-control'),
 					A2(
 					elm$html$Html$Events$on,
 					'change',
@@ -5494,7 +5494,7 @@ var author$project$Gentamicin$gentamicinLevelInput = F2(
 						author$project$Gentamicin$numericInput,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('form-control-lg'),
+								elm$html$Html$Attributes$class('form-control'),
 								elm$html$Html$Events$onInput(levelHandler)
 							]),
 						_List_Nil),
@@ -5520,7 +5520,7 @@ var author$project$Gentamicin$gentamicinLevelInput = F2(
 								elm$html$Html$select,
 								_List_fromArray(
 									[
-										elm$html$Html$Attributes$class('form-control-lg'),
+										elm$html$Html$Attributes$class('form-control'),
 										A2(elm$html$Html$Events$on, 'change', hourHandler)
 									]),
 								_List_fromArray(
@@ -5660,7 +5660,7 @@ var author$project$Gentamicin$gentamicinLevelInput = F2(
 						author$project$Gentamicin$numericInput,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('form-control-lg'),
+								elm$html$Html$Attributes$class('form-control'),
 								elm$html$Html$Events$onInput(levelHandler)
 							]),
 						_List_Nil),
@@ -5686,7 +5686,7 @@ var author$project$Gentamicin$gentamicinLevelInput = F2(
 								elm$html$Html$select,
 								_List_fromArray(
 									[
-										elm$html$Html$Attributes$class('form-control-lg'),
+										elm$html$Html$Attributes$class('form-control'),
 										A2(elm$html$Html$Events$on, 'change', hourHandler)
 									]),
 								_List_fromArray(
@@ -5897,7 +5897,7 @@ var author$project$Gentamicin$heightInput = F2(
 					author$project$Gentamicin$numericInput,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$class('form-control-lg'),
+							elm$html$Html$Attributes$class('form-control'),
 							elm$html$Html$Events$onInput(
 							A2(
 								elm$core$Basics$composeL,
@@ -5936,7 +5936,7 @@ var author$project$Gentamicin$heightInput = F2(
 							elm$html$Html$select,
 							_List_fromArray(
 								[
-									elm$html$Html$Attributes$class('form-control-lg'),
+									elm$html$Html$Attributes$class('form-control'),
 									A2(
 									elm$html$Html$Events$on,
 									'change',
@@ -6026,7 +6026,7 @@ var author$project$Gentamicin$serumCreatinineInput = F2(
 					author$project$Gentamicin$numericInput,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$class('form-control-lg'),
+							elm$html$Html$Attributes$class('form-control'),
 							elm$html$Html$Events$onInput(
 							A2(
 								elm$core$Basics$composeL,
@@ -6084,7 +6084,7 @@ var author$project$Gentamicin$sexInput = F2(
 			elm$html$Html$select,
 			_List_fromArray(
 				[
-					elm$html$Html$Attributes$class('form-control-lg'),
+					elm$html$Html$Attributes$class('form-control'),
 					A2(
 					elm$html$Html$Events$on,
 					'change',
@@ -6161,7 +6161,7 @@ var author$project$Gentamicin$weightInput = F2(
 					author$project$Gentamicin$numericInput,
 					_List_fromArray(
 						[
-							elm$html$Html$Attributes$class('form-control-lg'),
+							elm$html$Html$Attributes$class('form-control'),
 							elm$html$Html$Events$onInput(
 							A2(
 								elm$core$Basics$composeL,
