@@ -586,11 +586,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.W.G === region.aa.G)
+	if (region.X.G === region.ab.G)
 	{
-		return 'on line ' + region.W.G;
+		return 'on line ' + region.X.G;
 	}
-	return 'on lines ' + region.W.G + ' through ' + region.aa.G;
+	return 'on lines ' + region.X.G + ' through ' + region.ab.G;
 }
 
 
@@ -775,6 +775,115 @@ function _Utils_ap(xs, ys)
 		curr = curr.b = _List_Cons(xs.a, ys);
 	}
 	return root;
+}
+
+
+
+// MATH
+
+var _Basics_add = F2(function(a, b) { return a + b; });
+var _Basics_sub = F2(function(a, b) { return a - b; });
+var _Basics_mul = F2(function(a, b) { return a * b; });
+var _Basics_fdiv = F2(function(a, b) { return a / b; });
+var _Basics_idiv = F2(function(a, b) { return (a / b) | 0; });
+var _Basics_pow = F2(Math.pow);
+
+var _Basics_remainderBy = F2(function(b, a) { return a % b; });
+
+// https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
+var _Basics_modBy = F2(function(modulus, x)
+{
+	var answer = x % modulus;
+	return modulus === 0
+		? _Debug_crash(11)
+		:
+	((answer > 0 && modulus < 0) || (answer < 0 && modulus > 0))
+		? answer + modulus
+		: answer;
+});
+
+
+// TRIGONOMETRY
+
+var _Basics_pi = Math.PI;
+var _Basics_e = Math.E;
+var _Basics_cos = Math.cos;
+var _Basics_sin = Math.sin;
+var _Basics_tan = Math.tan;
+var _Basics_acos = Math.acos;
+var _Basics_asin = Math.asin;
+var _Basics_atan = Math.atan;
+var _Basics_atan2 = F2(Math.atan2);
+
+
+// MORE MATH
+
+function _Basics_toFloat(x) { return x; }
+function _Basics_truncate(n) { return n | 0; }
+function _Basics_isInfinite(n) { return n === Infinity || n === -Infinity; }
+
+var _Basics_ceiling = Math.ceil;
+var _Basics_floor = Math.floor;
+var _Basics_round = Math.round;
+var _Basics_sqrt = Math.sqrt;
+var _Basics_log = Math.log;
+var _Basics_isNaN = isNaN;
+
+
+// BOOLEANS
+
+function _Basics_not(bool) { return !bool; }
+var _Basics_and = F2(function(a, b) { return a && b; });
+var _Basics_or  = F2(function(a, b) { return a || b; });
+var _Basics_xor = F2(function(a, b) { return a !== b; });
+
+
+
+function _Char_toCode(char)
+{
+	var code = char.charCodeAt(0);
+	if (0xD800 <= code && code <= 0xDBFF)
+	{
+		return (code - 0xD800) * 0x400 + char.charCodeAt(1) - 0xDC00 + 0x10000
+	}
+	return code;
+}
+
+function _Char_fromCode(code)
+{
+	return _Utils_chr(
+		(code < 0 || 0x10FFFF < code)
+			? '\uFFFD'
+			:
+		(code <= 0xFFFF)
+			? String.fromCharCode(code)
+			:
+		(code -= 0x10000,
+			String.fromCharCode(Math.floor(code / 0x400) + 0xD800)
+			+
+			String.fromCharCode(code % 0x400 + 0xDC00)
+		)
+	);
+}
+
+function _Char_toUpper(char)
+{
+	return _Utils_chr(char.toUpperCase());
+}
+
+function _Char_toLower(char)
+{
+	return _Utils_chr(char.toLowerCase());
+}
+
+function _Char_toLocaleUpper(char)
+{
+	return _Utils_chr(char.toLocaleUpperCase());
+}
+
+function _Char_toLocaleLower(char)
+{
+	return _Utils_chr(char.toLocaleLowerCase());
 }
 
 
@@ -1088,115 +1197,6 @@ function _String_fromList(chars)
 	return _List_toArray(chars).join('');
 }
 
-
-
-
-// MATH
-
-var _Basics_add = F2(function(a, b) { return a + b; });
-var _Basics_sub = F2(function(a, b) { return a - b; });
-var _Basics_mul = F2(function(a, b) { return a * b; });
-var _Basics_fdiv = F2(function(a, b) { return a / b; });
-var _Basics_idiv = F2(function(a, b) { return (a / b) | 0; });
-var _Basics_pow = F2(Math.pow);
-
-var _Basics_remainderBy = F2(function(b, a) { return a % b; });
-
-// https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/divmodnote-letter.pdf
-var _Basics_modBy = F2(function(modulus, x)
-{
-	var answer = x % modulus;
-	return modulus === 0
-		? _Debug_crash(11)
-		:
-	((answer > 0 && modulus < 0) || (answer < 0 && modulus > 0))
-		? answer + modulus
-		: answer;
-});
-
-
-// TRIGONOMETRY
-
-var _Basics_pi = Math.PI;
-var _Basics_e = Math.E;
-var _Basics_cos = Math.cos;
-var _Basics_sin = Math.sin;
-var _Basics_tan = Math.tan;
-var _Basics_acos = Math.acos;
-var _Basics_asin = Math.asin;
-var _Basics_atan = Math.atan;
-var _Basics_atan2 = F2(Math.atan2);
-
-
-// MORE MATH
-
-function _Basics_toFloat(x) { return x; }
-function _Basics_truncate(n) { return n | 0; }
-function _Basics_isInfinite(n) { return n === Infinity || n === -Infinity; }
-
-var _Basics_ceiling = Math.ceil;
-var _Basics_floor = Math.floor;
-var _Basics_round = Math.round;
-var _Basics_sqrt = Math.sqrt;
-var _Basics_log = Math.log;
-var _Basics_isNaN = isNaN;
-
-
-// BOOLEANS
-
-function _Basics_not(bool) { return !bool; }
-var _Basics_and = F2(function(a, b) { return a && b; });
-var _Basics_or  = F2(function(a, b) { return a || b; });
-var _Basics_xor = F2(function(a, b) { return a !== b; });
-
-
-
-function _Char_toCode(char)
-{
-	var code = char.charCodeAt(0);
-	if (0xD800 <= code && code <= 0xDBFF)
-	{
-		return (code - 0xD800) * 0x400 + char.charCodeAt(1) - 0xDC00 + 0x10000
-	}
-	return code;
-}
-
-function _Char_fromCode(code)
-{
-	return _Utils_chr(
-		(code < 0 || 0x10FFFF < code)
-			? '\uFFFD'
-			:
-		(code <= 0xFFFF)
-			? String.fromCharCode(code)
-			:
-		(code -= 0x10000,
-			String.fromCharCode(Math.floor(code / 0x400) + 0xD800)
-			+
-			String.fromCharCode(code % 0x400 + 0xDC00)
-		)
-	);
-}
-
-function _Char_toUpper(char)
-{
-	return _Utils_chr(char.toUpperCase());
-}
-
-function _Char_toLower(char)
-{
-	return _Utils_chr(char.toLowerCase());
-}
-
-function _Char_toLocaleUpper(char)
-{
-	return _Utils_chr(char.toLocaleUpperCase());
-}
-
-function _Char_toLocaleLower(char)
-{
-	return _Utils_chr(char.toLocaleLowerCase());
-}
 
 
 
@@ -1841,9 +1841,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aL,
-		impl.aJ,
+		impl.aE,
+		impl.aM,
+		impl.aK,
 		function() { return function() {} }
 	);
 });
@@ -2643,9 +2643,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		k: func(record.k),
-		X: record.X,
-		V: record.V
+		l: func(record.l),
+		Y: record.Y,
+		W: record.W
 	}
 });
 
@@ -2913,11 +2913,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.k;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.X;
+		var message = !tag ? value : tag < 3 ? value.a : value.l;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Y;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.V) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.W) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3863,11 +3863,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aL,
-		impl.aJ,
+		impl.aE,
+		impl.aM,
+		impl.aK,
 		function(sendToApp, initialModel) {
-			var view = impl.aN;
+			var view = impl.aO;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3899,12 +3899,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aD,
-		impl.aL,
-		impl.aJ,
+		impl.aE,
+		impl.aM,
+		impl.aK,
 		function(sendToApp, initialModel) {
 			var divertHrefToApp = impl.I && impl.I(sendToApp)
-			var view = impl.aN;
+			var view = impl.aO;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3912,12 +3912,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aw);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ax);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aK) && (_VirtualDom_doc.title = title = doc.aK);
+				(title !== doc.aL) && (_VirtualDom_doc.title = title = doc.aL);
 			});
 		}
 	);
@@ -3968,8 +3968,8 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aF;
-	var onUrlRequest = impl.aG;
+	var onUrlChange = impl.aG;
+	var onUrlRequest = impl.aH;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
@@ -3989,9 +3989,9 @@ function _Browser_application(impl)
 					var next = elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.am === next.am
-							&& curr.ad === next.ad
-							&& curr.aj.a === next.aj.a
+							&& curr.an === next.an
+							&& curr.ae === next.ae
+							&& curr.ak.a === next.ak.a
 						)
 							? elm$browser$Browser$Internal(next)
 							: elm$browser$Browser$External(href)
@@ -3999,13 +3999,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aD: function(flags)
+		aE: function(flags)
 		{
-			return A3(impl.aD, flags, _Browser_getUrl(), key);
+			return A3(impl.aE, flags, _Browser_getUrl(), key);
 		},
-		aN: impl.aN,
-		aL: impl.aL,
-		aJ: impl.aJ
+		aO: impl.aO,
+		aM: impl.aM,
+		aK: impl.aK
 	});
 }
 
@@ -4071,17 +4071,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aB: 'hidden', D: 'visibilitychange' }
+		? { aC: 'hidden', D: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aB: 'mozHidden', D: 'mozvisibilitychange' }
+		? { aC: 'mozHidden', D: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aB: 'msHidden', D: 'msvisibilitychange' }
+		? { aC: 'msHidden', D: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aB: 'webkitHidden', D: 'webkitvisibilitychange' }
-		: { aB: 'hidden', D: 'visibilitychange' };
+		? { aC: 'webkitHidden', D: 'webkitvisibilitychange' }
+		: { aC: 'hidden', D: 'visibilitychange' };
 }
 
 
@@ -4162,12 +4162,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		aq: _Browser_getScene(),
-		at: {
-			P: _Browser_window.pageXOffset,
-			Q: _Browser_window.pageYOffset,
+		ar: _Browser_getScene(),
+		au: {
+			Q: _Browser_window.pageXOffset,
+			R: _Browser_window.pageYOffset,
 			A: _Browser_doc.documentElement.clientWidth,
-			o: _Browser_doc.documentElement.clientHeight
+			h: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4178,7 +4178,7 @@ function _Browser_getScene()
 	var elem = _Browser_doc.documentElement;
 	return {
 		A: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		o: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		h: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4201,15 +4201,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			aq: {
+			ar: {
 				A: node.scrollWidth,
-				o: node.scrollHeight
+				h: node.scrollHeight
 			},
-			at: {
-				P: node.scrollLeft,
-				Q: node.scrollTop,
+			au: {
+				Q: node.scrollLeft,
+				R: node.scrollTop,
 				A: node.clientWidth,
-				o: node.clientHeight
+				h: node.clientHeight
 			}
 		};
 	});
@@ -4239,18 +4239,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			aq: _Browser_getScene(),
-			at: {
-				P: x,
-				Q: y,
+			ar: _Browser_getScene(),
+			au: {
+				Q: x,
+				R: y,
 				A: _Browser_doc.documentElement.clientWidth,
-				o: _Browser_doc.documentElement.clientHeight
+				h: _Browser_doc.documentElement.clientHeight
 			},
-			ay: {
-				P: x + rect.left,
-				Q: y + rect.top,
+			az: {
+				Q: x + rect.left,
+				R: y + rect.top,
 				A: rect.width,
-				o: rect.height
+				h: rect.height
 			}
 		};
 	});
@@ -4285,9 +4285,9 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Main$Daily5mg = 0;
-var author$project$Main$Female = 1;
-var author$project$Main$Inch = 1;
+var author$project$Gentamicin$Daily5mg = 0;
+var author$project$Gentamicin$Female = 1;
+var author$project$Gentamicin$Inch = 1;
 var elm$core$Maybe$Nothing = {$: 1};
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var elm$core$Array$foldr = F3(
@@ -4369,160 +4369,34 @@ var elm$core$Set$toList = function (_n0) {
 	var dict = _n0;
 	return elm$core$Dict$keys(dict);
 };
-var author$project$Main$init = {
+var author$project$Gentamicin$init = {
 	B: elm$core$Maybe$Nothing,
 	E: 1,
-	t: 0,
+	u: 0,
 	F: _Utils_Tuple2(6, elm$core$Maybe$Nothing),
-	o: elm$core$Maybe$Nothing,
+	h: elm$core$Maybe$Nothing,
 	H: elm$core$Maybe$Nothing,
-	x: 1,
-	s: elm$core$Maybe$Nothing
+	r: 1,
+	t: elm$core$Maybe$Nothing
 };
-var author$project$Main$Age = elm$core$Basics$identity;
-var author$project$Main$Height = F2(
-	function (a, b) {
-		return {$: 0, a: a, b: b};
-	});
-var author$project$Main$SerumCreatinine = elm$core$Basics$identity;
-var author$project$Main$Weight = elm$core$Basics$identity;
-var author$project$Main$Cm = 0;
-var elm$core$Maybe$Just = function (a) {
+var author$project$Main$Gentamicin = function (a) {
 	return {$: 0, a: a};
 };
-var author$project$Main$stringToHeightUnit = function (str) {
-	switch (str) {
-		case 'cm':
-			return elm$core$Maybe$Just(0);
-		case 'inch':
-			return elm$core$Maybe$Just(1);
-		default:
-			return elm$core$Maybe$Nothing;
-	}
+var author$project$Main$init = {
+	P: author$project$Main$Gentamicin(author$project$Gentamicin$init)
 };
+var author$project$Main$update = F2(
+	function (msg, model) {
+		var p = msg;
+		return _Utils_update(
+			model,
+			{P: p});
+	});
+var author$project$Gentamicin$Daily7mg = 1;
+var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
-var elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (!maybe.$) {
-			var value = maybe.a;
-			return elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return elm$core$Maybe$Nothing;
-		}
-	});
-var elm$core$String$toFloat = _String_toFloat;
-var elm$core$String$toInt = _String_toInt;
-var author$project$Main$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 0:
-				var mSex = msg.a;
-				if (!mSex.$) {
-					var s = mSex.a;
-					return _Utils_update(
-						model,
-						{x: s});
-				} else {
-					return model;
-				}
-			case 1:
-				var unit = msg.a;
-				var heightStr = msg.b;
-				return _Utils_update(
-					model,
-					{
-						o: A2(
-							elm$core$Maybe$map,
-							author$project$Main$Height(unit),
-							elm$core$String$toInt(heightStr))
-					});
-			case 2:
-				var unitStr = msg.a;
-				var _n2 = author$project$Main$stringToHeightUnit(unitStr);
-				if (!_n2.$) {
-					var u = _n2.a;
-					var _n3 = model.o;
-					if (!_n3.$) {
-						var _n4 = _n3.a;
-						var h = _n4.b;
-						return _Utils_update(
-							model,
-							{
-								E: u,
-								o: elm$core$Maybe$Just(
-									A2(author$project$Main$Height, u, h))
-							});
-					} else {
-						return _Utils_update(
-							model,
-							{E: u});
-					}
-				} else {
-					return model;
-				}
-			case 3:
-				var weightStr = msg.a;
-				return _Utils_update(
-					model,
-					{
-						s: A2(
-							elm$core$Maybe$map,
-							elm$core$Basics$identity,
-							elm$core$String$toInt(weightStr))
-					});
-			case 4:
-				var ageStr = msg.a;
-				return _Utils_update(
-					model,
-					{
-						B: A2(
-							elm$core$Maybe$map,
-							elm$core$Basics$identity,
-							elm$core$String$toInt(ageStr))
-					});
-			case 5:
-				var scStr = msg.a;
-				return _Utils_update(
-					model,
-					{
-						H: A2(
-							elm$core$Maybe$map,
-							elm$core$Basics$identity,
-							elm$core$String$toFloat(scStr))
-					});
-			case 6:
-				var mDosage = msg.a;
-				if (!mDosage.$) {
-					var d = mDosage.a;
-					return _Utils_update(
-						model,
-						{t: d});
-				} else {
-					return model;
-				}
-			default:
-				var mHour = msg.a;
-				var mLevel = msg.b;
-				if (mHour.$ === 1) {
-					return model;
-				} else {
-					var hour = mHour.a;
-					return _Utils_update(
-						model,
-						{
-							F: _Utils_Tuple2(hour, mLevel)
-						});
-				}
-		}
-	});
-var author$project$Main$Daily7mg = 1;
-var author$project$Main$SetAge = function (a) {
-	return {$: 4, a: a};
-};
-var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$False = 1;
 var elm$core$Basics$True = 0;
 var elm$core$Result$isOk = function (result) {
@@ -4703,6 +4577,9 @@ var elm$core$Array$initialize = F2(
 			return A5(elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
+var elm$core$Maybe$Just = function (a) {
+	return {$: 0, a: a};
+};
 var elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -4940,7 +4817,7 @@ var elm$html$Html$Attributes$stringProperty = F2(
 var elm$html$Html$Attributes$min = elm$html$Html$Attributes$stringProperty('min');
 var elm$html$Html$Attributes$pattern = elm$html$Html$Attributes$stringProperty('pattern');
 var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
-var author$project$Main$numericInput = F2(
+var author$project$Gentamicin$numericInput = F2(
 	function (attrs, children) {
 		var defaultAttrs = _List_fromArray(
 			[
@@ -4952,6 +4829,34 @@ var author$project$Main$numericInput = F2(
 			elm$html$Html$input,
 			_Utils_ap(defaultAttrs, attrs),
 			children);
+	});
+var author$project$Gentamicin$Age = elm$core$Basics$identity;
+var elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var elm$core$String$toInt = _String_toInt;
+var author$project$Gentamicin$setAge = F2(
+	function (model, ageStr) {
+		return _Utils_update(
+			model,
+			{
+				B: A2(
+					elm$core$Maybe$map,
+					elm$core$Basics$identity,
+					elm$core$String$toInt(ageStr))
+			});
+	});
+var elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
 	});
 var elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -5055,62 +4960,66 @@ var elm$html$Html$Events$onInput = function (tagger) {
 			elm$html$Html$Events$alwaysStop,
 			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
 };
-var author$project$Main$ageInput = function (_n0) {
-	var age = _n0.B;
-	var ageStr = A2(
-		elm$core$Maybe$withDefault,
-		'',
-		A2(
-			elm$core$Maybe$map,
-			function (_n1) {
-				var a = _n1;
-				return elm$core$String$fromInt(a);
-			},
-			age));
-	return A2(
-		elm$html$Html$div,
-		_List_fromArray(
-			[
-				elm$html$Html$Attributes$class('input-group')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				author$project$Main$numericInput,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('form-control-lg'),
-						elm$html$Html$Events$onInput(author$project$Main$SetAge)
-					]),
-				_List_Nil),
-				A2(
-				elm$html$Html$div,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('input-group-append')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						elm$html$Html$div,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$class('input-group-text')
-							]),
-						_List_fromArray(
-							[
-								elm$html$Html$text('years')
-							]))
-					]))
-			]));
-};
+var author$project$Gentamicin$ageInput = F2(
+	function (update, model) {
+		var ageStr = A2(
+			elm$core$Maybe$withDefault,
+			'',
+			A2(
+				elm$core$Maybe$map,
+				function (_n0) {
+					var a = _n0;
+					return elm$core$String$fromInt(a);
+				},
+				model.B));
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('input-group')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					author$project$Gentamicin$numericInput,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('form-control-lg'),
+							elm$html$Html$Events$onInput(
+							A2(
+								elm$core$Basics$composeL,
+								update,
+								author$project$Gentamicin$setAge(model)))
+						]),
+					_List_Nil),
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('input-group-append')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$div,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('input-group-text')
+								]),
+							_List_fromArray(
+								[
+									elm$html$Html$text('years')
+								]))
+						]))
+				]));
+	});
 var elm$core$Basics$round = _Basics_round;
-var author$project$Main$cmToInches = function (f) {
+var author$project$Gentamicin$cmToInches = function (f) {
 	return elm$core$Basics$round(0.393701 * f);
 };
-var author$project$Main$idealBodyWeight = function (_n0) {
-	var sex = _n0.x;
-	var height = _n0.o;
+var author$project$Gentamicin$idealBodyWeight = function (_n0) {
+	var sex = _n0.r;
+	var height = _n0.h;
 	if (!height.$) {
 		var height_ = height.a;
 		var heightInInches = function () {
@@ -5121,7 +5030,7 @@ var author$project$Main$idealBodyWeight = function (_n0) {
 			} else {
 				var _n5 = height_.a;
 				var h = height_.b;
-				return author$project$Main$cmToInches(h);
+				return author$project$Gentamicin$cmToInches(h);
 			}
 		}();
 		var heightOverFiveFeet = heightInInches - (12 * 5);
@@ -5137,10 +5046,10 @@ var author$project$Main$idealBodyWeight = function (_n0) {
 		return elm$core$Maybe$Nothing;
 	}
 };
-var author$project$Main$correctedBodyWeight = function (model) {
+var author$project$Gentamicin$correctedBodyWeight = function (model) {
 	var _n0 = _Utils_Tuple2(
-		model.s,
-		author$project$Main$idealBodyWeight(model));
+		model.t,
+		author$project$Gentamicin$idealBodyWeight(model));
 	if ((!_n0.a.$) && (!_n0.b.$)) {
 		var actual = _n0.a.a;
 		var ideal = _n0.b.a;
@@ -5149,11 +5058,11 @@ var author$project$Main$correctedBodyWeight = function (model) {
 		return elm$core$Maybe$Nothing;
 	}
 };
-var author$project$Main$Clearance = elm$core$Basics$identity;
-var author$project$Main$creatinineClearance = function (_n0) {
-	var sex = _n0.x;
+var author$project$Gentamicin$Clearance = elm$core$Basics$identity;
+var author$project$Gentamicin$creatinineClearance = function (_n0) {
+	var sex = _n0.r;
 	var age = _n0.B;
-	var weight = _n0.s;
+	var weight = _n0.t;
 	var serumCreatinine = _n0.H;
 	var _n1 = _Utils_Tuple3(age, weight, serumCreatinine);
 	if (((!_n1.a.$) && (!_n1.b.$)) && (!_n1.c.$)) {
@@ -5170,11 +5079,19 @@ var author$project$Main$creatinineClearance = function (_n0) {
 		return elm$core$Maybe$Nothing;
 	}
 };
-var author$project$Main$Divided = 2;
-var author$project$Main$SetDosage = function (a) {
-	return {$: 6, a: a};
-};
-var author$project$Main$stringToDosage = function (str) {
+var author$project$Gentamicin$Divided = 2;
+var author$project$Gentamicin$setDosage = F2(
+	function (model, mDosage) {
+		if (!mDosage.$) {
+			var d = mDosage.a;
+			return _Utils_update(
+				model,
+				{u: d});
+		} else {
+			return model;
+		}
+	});
+var author$project$Gentamicin$stringToDosage = function (str) {
 	switch (str) {
 		case 'daily_5mg':
 			return elm$core$Maybe$Just(0);
@@ -5186,11 +5103,6 @@ var author$project$Main$stringToDosage = function (str) {
 			return elm$core$Maybe$Nothing;
 	}
 };
-var elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
 var elm$html$Html$option = _VirtualDom_node('option');
 var elm$html$Html$select = _VirtualDom_node('select');
 var elm$json$Json$Encode$bool = _Json_wrap;
@@ -5213,60 +5125,67 @@ var elm$html$Html$Events$on = F2(
 			event,
 			elm$virtual_dom$VirtualDom$Normal(decoder));
 	});
-var author$project$Main$dosageInput = function (_n0) {
-	var dosage = _n0.t;
-	return A2(
-		elm$html$Html$select,
-		_List_fromArray(
-			[
-				elm$html$Html$Attributes$class('form-control-lg'),
-				A2(
-				elm$html$Html$Events$on,
-				'change',
-				A2(
-					elm$json$Json$Decode$map,
-					A2(elm$core$Basics$composeL, author$project$Main$SetDosage, author$project$Main$stringToDosage),
-					elm$html$Html$Events$targetValue))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				elm$html$Html$option,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$value('daily_5mg'),
-						elm$html$Html$Attributes$selected(!dosage)
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text('Daily (5 mg)')
-					])),
-				A2(
-				elm$html$Html$option,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$value('daily_7mg'),
-						elm$html$Html$Attributes$selected(dosage === 1)
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text('Daily (7 mg)')
-					])),
-				A2(
-				elm$html$Html$option,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$value('divided'),
-						elm$html$Html$Attributes$selected(dosage === 2)
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text('Divided')
-					]))
-			]));
-};
-var author$project$Main$Dose = {$: 0};
-var author$project$Main$Other = function (a) {
+var author$project$Gentamicin$dosageInput = F2(
+	function (update, model) {
+		var dosage = model.u;
+		return A2(
+			elm$html$Html$select,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('form-control-lg'),
+					A2(
+					elm$html$Html$Events$on,
+					'change',
+					A2(
+						elm$json$Json$Decode$map,
+						A2(
+							elm$core$Basics$composeL,
+							A2(
+								elm$core$Basics$composeL,
+								update,
+								author$project$Gentamicin$setDosage(model)),
+							author$project$Gentamicin$stringToDosage),
+						elm$html$Html$Events$targetValue))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$option,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$value('daily_5mg'),
+							elm$html$Html$Attributes$selected(!dosage)
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Daily (5 mg)')
+						])),
+					A2(
+					elm$html$Html$option,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$value('daily_7mg'),
+							elm$html$Html$Attributes$selected(dosage === 1)
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Daily (7 mg)')
+						])),
+					A2(
+					elm$html$Html$option,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$value('divided'),
+							elm$html$Html$Attributes$selected(dosage === 2)
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Divided')
+						]))
+				]));
+	});
+var author$project$Gentamicin$Dose = {$: 0};
+var author$project$Gentamicin$Other = function (a) {
 	return {$: 1, a: a};
 };
 var elm$core$Basics$ge = _Utils_ge;
@@ -5278,18 +5197,18 @@ var elm$core$Tuple$mapBoth = F3(
 			funcA(x),
 			funcB(y));
 	});
-var author$project$Main$daily = F2(
+var author$project$Gentamicin$daily = F2(
 	function (model, weight) {
-		var _n0 = author$project$Main$creatinineClearance(model);
+		var _n0 = author$project$Gentamicin$creatinineClearance(model);
 		if (_n0.$ === 1) {
 			return elm$core$Maybe$Nothing;
 		} else {
 			var cc = _n0.a;
 			var perKg = (cc < 20.0) ? _Utils_Tuple2(2, 3) : _Utils_Tuple2(5, 7);
 			var note = (cc < 20.0) ? elm$core$Maybe$Just('poor kidney function') : elm$core$Maybe$Nothing;
-			var following = (cc >= 60.0) ? _Utils_Tuple2(24, author$project$Main$Dose) : ((cc >= 40.0) ? _Utils_Tuple2(36, author$project$Main$Dose) : ((cc >= 20.0) ? _Utils_Tuple2(48, author$project$Main$Dose) : _Utils_Tuple2(
+			var following = (cc >= 60.0) ? _Utils_Tuple2(24, author$project$Gentamicin$Dose) : ((cc >= 40.0) ? _Utils_Tuple2(36, author$project$Gentamicin$Dose) : ((cc >= 20.0) ? _Utils_Tuple2(48, author$project$Gentamicin$Dose) : _Utils_Tuple2(
 				48,
-				author$project$Main$Other('take gentamicin levels; apply next dose when levels fall to < 1 µmol/L'))));
+				author$project$Gentamicin$Other('take gentamicin levels; apply next dose when levels fall to < 1 µmol/L'))));
 			var _n1 = function () {
 				var f = function (x) {
 					return elm$core$Basics$round(x * weight);
@@ -5301,22 +5220,22 @@ var author$project$Main$daily = F2(
 			return elm$core$Maybe$Just(
 				{
 					N: perKg,
-					R: following,
+					S: following,
 					O: _Utils_Tuple2(min, max),
-					T: note
+					U: note
 				});
 		}
 	});
-var author$project$Main$daily5mgDosageInstruction = F2(
+var author$project$Gentamicin$daily5mgDosageInstruction = F2(
 	function (model, weight) {
-		var _n0 = A2(author$project$Main$daily, model, weight);
+		var _n0 = A2(author$project$Gentamicin$daily, model, weight);
 		if (_n0.$ === 1) {
 			return _Utils_Tuple3('', '', '');
 		} else {
 			var base = _n0.a.N;
 			var initial = _n0.a.O;
-			var following = _n0.a.R;
-			var note = _n0.a.T;
+			var following = _n0.a.S;
+			var note = _n0.a.U;
 			var rangeStr = function (_n4) {
 				var a = _n4.a;
 				var b = _n4.b;
@@ -5344,32 +5263,32 @@ var author$project$Main$daily5mgDosageInstruction = F2(
 				followingStr);
 		}
 	});
-var author$project$Main$Custom = 3;
-var author$project$Main$H24 = 0;
-var author$project$Main$H36 = 1;
-var author$project$Main$H48 = 2;
-var author$project$Main$nomogram24h = function (x) {
+var author$project$Gentamicin$Custom = 3;
+var author$project$Gentamicin$H24 = 0;
+var author$project$Gentamicin$H36 = 1;
+var author$project$Gentamicin$H48 = 2;
+var author$project$Gentamicin$nomogram24h = function (x) {
 	return 11.625 - (0.6875 * x);
 };
-var author$project$Main$nomogram36h = function (x) {
+var author$project$Gentamicin$nomogram36h = function (x) {
 	return 17 - x;
 };
-var author$project$Main$nomogram48h = function (x) {
+var author$project$Gentamicin$nomogram48h = function (x) {
 	return 19 - x;
 };
-var author$project$Main$nomogramArea = F2(
+var author$project$Gentamicin$nomogramArea = F2(
 	function (x, y) {
 		return (_Utils_cmp(
 			y,
-			author$project$Main$nomogram48h(x)) > 0) ? 3 : ((_Utils_cmp(
+			author$project$Gentamicin$nomogram48h(x)) > 0) ? 3 : ((_Utils_cmp(
 			y,
-			author$project$Main$nomogram36h(x)) > 0) ? 2 : ((_Utils_cmp(
+			author$project$Gentamicin$nomogram36h(x)) > 0) ? 2 : ((_Utils_cmp(
 			y,
-			author$project$Main$nomogram24h(x)) > 0) ? 1 : 0));
+			author$project$Gentamicin$nomogram24h(x)) > 0) ? 1 : 0));
 	});
-var author$project$Main$daily7mgDosageInstruction = F2(
+var author$project$Gentamicin$daily7mgDosageInstruction = F2(
 	function (model, weight) {
-		var _n0 = A2(author$project$Main$daily, model, weight);
+		var _n0 = A2(author$project$Gentamicin$daily, model, weight);
 		if (_n0.$ === 1) {
 			return _Utils_Tuple3('', '', '');
 		} else {
@@ -5385,7 +5304,7 @@ var author$project$Main$daily7mgDosageInstruction = F2(
 			var mLevel = _n1.b;
 			var area = A2(
 				elm$core$Maybe$map,
-				author$project$Main$nomogramArea(hour),
+				author$project$Gentamicin$nomogramArea(hour),
 				mLevel);
 			var nextDose = function () {
 				if (area.$ === 1) {
@@ -5410,7 +5329,7 @@ var author$project$Main$daily7mgDosageInstruction = F2(
 			return _Utils_Tuple3(initialStr, 'Take gentamicin levels 6-14 hours after first dose', nextDose);
 		}
 	});
-var author$project$Main$dividedDosageInstruction = F2(
+var author$project$Gentamicin$dividedDosageInstruction = F2(
 	function (model, weight) {
 		var _n0 = _Utils_Tuple2((3 * weight) / 3, (5 * weight) / 3);
 		var min = _n0.a;
@@ -5427,10 +5346,10 @@ var author$project$Main$dividedDosageInstruction = F2(
 				_List_fromArray(
 					['After 1 hour, gentamicin levels should be 5-10 mg/L', 'After 24 hours, gentamicin levels should be < 2 mg/L'])));
 	});
-var author$project$Main$isObese = function (model) {
+var author$project$Gentamicin$isObese = function (model) {
 	var _n0 = _Utils_Tuple2(
-		author$project$Main$idealBodyWeight(model),
-		model.s);
+		author$project$Gentamicin$idealBodyWeight(model),
+		model.t);
 	if ((!_n0.a.$) && (!_n0.b.$)) {
 		var ibw = _n0.a.a;
 		var w = _n0.b.a;
@@ -5442,22 +5361,22 @@ var author$project$Main$isObese = function (model) {
 var elm$html$Html$table = _VirtualDom_node('table');
 var elm$html$Html$td = _VirtualDom_node('td');
 var elm$html$Html$tr = _VirtualDom_node('tr');
-var author$project$Main$dosageInstruction = function (model) {
-	var weight = author$project$Main$isObese(model) ? author$project$Main$correctedBodyWeight : author$project$Main$idealBodyWeight;
+var author$project$Gentamicin$dosageInstruction = function (model) {
+	var weight = author$project$Gentamicin$isObese(model) ? author$project$Gentamicin$correctedBodyWeight : author$project$Gentamicin$idealBodyWeight;
 	var _n0 = function () {
 		var _n1 = weight(model);
 		if (_n1.$ === 1) {
 			return _Utils_Tuple3('', '', '');
 		} else {
 			var w = _n1.a;
-			var _n2 = model.t;
+			var _n2 = model.u;
 			switch (_n2) {
 				case 0:
-					return A2(author$project$Main$daily5mgDosageInstruction, model, w);
+					return A2(author$project$Gentamicin$daily5mgDosageInstruction, model, w);
 				case 1:
-					return A2(author$project$Main$daily7mgDosageInstruction, model, w);
+					return A2(author$project$Gentamicin$daily7mgDosageInstruction, model, w);
 				default:
-					return A2(author$project$Main$dividedDosageInstruction, model, w);
+					return A2(author$project$Gentamicin$dividedDosageInstruction, model, w);
 			}
 		}
 	}();
@@ -5534,468 +5453,538 @@ var author$project$Main$dosageInstruction = function (model) {
 					]))
 			]));
 };
-var author$project$Main$SetGentamicinMeasurement = F2(
-	function (a, b) {
-		return {$: 7, a: a, b: b};
+var author$project$Gentamicin$setGentamicinMeasurement = F3(
+	function (model, mHour, mLevel) {
+		if (mHour.$ === 1) {
+			return model;
+		} else {
+			var hour = mHour.a;
+			return _Utils_update(
+				model,
+				{
+					F: _Utils_Tuple2(hour, mLevel)
+				});
+		}
 	});
-var author$project$Main$gentamicinLevelInput = function (_n0) {
-	var gentamicinMeasurement = _n0.F;
-	var _n1 = gentamicinMeasurement;
-	var hour = _n1.a;
-	var mLevel = _n1.b;
-	if (mLevel.$ === 1) {
-		var levelHandler = function (s) {
+var elm$core$String$toFloat = _String_toFloat;
+var author$project$Gentamicin$gentamicinLevelInput = F2(
+	function (update, model) {
+		var _n0 = model.F;
+		var hour = _n0.a;
+		var mLevel = _n0.b;
+		if (mLevel.$ === 1) {
+			var levelHandler = function (s) {
+				return update(
+					A3(
+						author$project$Gentamicin$setGentamicinMeasurement,
+						model,
+						elm$core$Maybe$Just(hour),
+						elm$core$String$toFloat(s)));
+			};
+			var hourHandler = A2(
+				elm$json$Json$Decode$map,
+				function (hStr) {
+					return update(
+						A3(
+							author$project$Gentamicin$setGentamicinMeasurement,
+							model,
+							elm$core$String$toInt(hStr),
+							elm$core$Maybe$Nothing));
+				},
+				elm$html$Html$Events$targetValue);
 			return A2(
-				author$project$Main$SetGentamicinMeasurement,
-				elm$core$Maybe$Just(hour),
-				elm$core$String$toFloat(s));
-		};
-		var hourHandler = A2(
-			elm$json$Json$Decode$map,
-			function (hStr) {
-				return A2(
-					author$project$Main$SetGentamicinMeasurement,
-					elm$core$String$toInt(hStr),
-					elm$core$Maybe$Nothing);
-			},
-			elm$html$Html$Events$targetValue);
-		return A2(
-			elm$html$Html$div,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$class('input-group')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					author$project$Main$numericInput,
-					_List_fromArray(
-						[
-							elm$html$Html$Attributes$class('form-control-lg'),
-							elm$html$Html$Events$onInput(levelHandler)
-						]),
-					_List_Nil),
-					A2(
-					elm$html$Html$div,
-					_List_fromArray(
-						[
-							elm$html$Html$Attributes$class('input-group-append')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$html$Html$div,
-							_List_fromArray(
-								[
-									elm$html$Html$Attributes$class('input-group-text')
-								]),
-							_List_fromArray(
-								[
-									elm$html$Html$text(' µg/mL')
-								])),
-							A2(
-							elm$html$Html$select,
-							_List_fromArray(
-								[
-									elm$html$Html$Attributes$class('form-control-lg'),
-									A2(elm$html$Html$Events$on, 'change', hourHandler)
-								]),
-							_List_fromArray(
-								[
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('6'),
-											elm$html$Html$Attributes$selected(hour === 6)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 6 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('7'),
-											elm$html$Html$Attributes$selected(hour === 7)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 7 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('8'),
-											elm$html$Html$Attributes$selected(hour === 8)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 8 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('9'),
-											elm$html$Html$Attributes$selected(hour === 9)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 9 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('10'),
-											elm$html$Html$Attributes$selected(hour === 10)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 10 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('11'),
-											elm$html$Html$Attributes$selected(hour === 11)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 11 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('12'),
-											elm$html$Html$Attributes$selected(hour === 12)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 12 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('13'),
-											elm$html$Html$Attributes$selected(hour === 13)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 13 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('14'),
-											elm$html$Html$Attributes$selected(hour === 14)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 14 hours')
-										]))
-								]))
-						]))
-				]));
-	} else {
-		var level = mLevel.a;
-		var levelHandler = function (s) {
-			return A2(
-				author$project$Main$SetGentamicinMeasurement,
-				elm$core$Maybe$Just(hour),
-				elm$core$String$toFloat(s));
-		};
-		var hourHandler = A2(
-			elm$json$Json$Decode$map,
-			function (hStr) {
-				return A2(
-					author$project$Main$SetGentamicinMeasurement,
-					elm$core$String$toInt(hStr),
-					elm$core$Maybe$Just(level));
-			},
-			elm$html$Html$Events$targetValue);
-		return A2(
-			elm$html$Html$div,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$class('input-group')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					author$project$Main$numericInput,
-					_List_fromArray(
-						[
-							elm$html$Html$Attributes$class('form-control-lg'),
-							elm$html$Html$Events$onInput(levelHandler)
-						]),
-					_List_Nil),
-					A2(
-					elm$html$Html$div,
-					_List_fromArray(
-						[
-							elm$html$Html$Attributes$class('input-group-append')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							elm$html$Html$div,
-							_List_fromArray(
-								[
-									elm$html$Html$Attributes$class('input-group-text')
-								]),
-							_List_fromArray(
-								[
-									elm$html$Html$text('µg/mL')
-								])),
-							A2(
-							elm$html$Html$select,
-							_List_fromArray(
-								[
-									elm$html$Html$Attributes$class('form-control-lg'),
-									A2(elm$html$Html$Events$on, 'change', hourHandler)
-								]),
-							_List_fromArray(
-								[
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('6'),
-											elm$html$Html$Attributes$selected(hour === 6)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 6 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('7'),
-											elm$html$Html$Attributes$selected(hour === 7)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 7 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('8'),
-											elm$html$Html$Attributes$selected(hour === 8)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 8 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('9'),
-											elm$html$Html$Attributes$selected(hour === 9)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 9 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('10'),
-											elm$html$Html$Attributes$selected(hour === 10)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 10 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('11'),
-											elm$html$Html$Attributes$selected(hour === 11)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 11 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('12'),
-											elm$html$Html$Attributes$selected(hour === 12)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 12 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('13'),
-											elm$html$Html$Attributes$selected(hour === 13)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 13 hours')
-										])),
-									A2(
-									elm$html$Html$option,
-									_List_fromArray(
-										[
-											elm$html$Html$Attributes$value('14'),
-											elm$html$Html$Attributes$selected(hour === 14)
-										]),
-									_List_fromArray(
-										[
-											elm$html$Html$text('after 14 hours')
-										]))
-								]))
-						]))
-				]));
-	}
-};
-var author$project$Main$SetHeightUnit = function (a) {
-	return {$: 2, a: a};
-};
-var author$project$Main$SetHeightValue = F2(
-	function (a, b) {
-		return {$: 1, a: a, b: b};
-	});
-var author$project$Main$cmToString = function (h) {
-	var metres = (h / 100) | 0;
-	var cm = h % 100;
-	return (!metres) ? (elm$core$String$fromInt(h) + ' cm') : (elm$core$String$fromInt(metres) + ('m ' + (elm$core$String$fromInt(cm) + 'cm')));
-};
-var author$project$Main$inchToString = function (h) {
-	var inches = h % 12;
-	var feet = (h / 12) | 0;
-	return (!feet) ? (elm$core$String$fromInt(h) + ' inches') : (elm$core$String$fromInt(feet) + (' feet ' + (elm$core$String$fromInt(inches) + ' inches')));
-};
-var author$project$Main$heightToString = function (_n0) {
-	var unit = _n0.a;
-	var h = _n0.b;
-	if (!unit) {
-		return author$project$Main$cmToString(h);
-	} else {
-		return author$project$Main$inchToString(h);
-	}
-};
-var author$project$Main$heightInput = function (_n0) {
-	var height = _n0.o;
-	var defaultHeightUnit = _n0.E;
-	var unit = A2(
-		elm$core$Maybe$withDefault,
-		defaultHeightUnit,
-		A2(
-			elm$core$Maybe$map,
-			function (_n2) {
-				var u = _n2.a;
-				return u;
-			},
-			height));
-	var h = A2(
-		elm$core$Maybe$map,
-		function (_n1) {
-			var h_ = _n1.b;
-			return h_;
-		},
-		height);
-	return A2(
-		elm$html$Html$div,
-		_List_fromArray(
-			[
-				elm$html$Html$Attributes$class('input-group')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				author$project$Main$numericInput,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('form-control-lg'),
-						elm$html$Html$Events$onInput(
-						author$project$Main$SetHeightValue(unit))
-					]),
-				_List_Nil),
-				A2(
 				elm$html$Html$div,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('input-group-append')
+						elm$html$Html$Attributes$class('input-group')
 					]),
 				_List_fromArray(
 					[
+						A2(
+						author$project$Gentamicin$numericInput,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('form-control-lg'),
+								elm$html$Html$Events$onInput(levelHandler)
+							]),
+						_List_Nil),
 						A2(
 						elm$html$Html$div,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('input-group-text')
-							]),
-						_List_fromArray(
-							[
-								elm$html$Html$text(
-								A2(
-									elm$core$Maybe$withDefault,
-									'',
-									A2(
-										elm$core$Maybe$map,
-										function (s) {
-											return ' (' + (s + ')');
-										},
-										A2(elm$core$Maybe$map, author$project$Main$heightToString, height))))
-							])),
-						A2(
-						elm$html$Html$select,
-						_List_fromArray(
-							[
-								A2(
-								elm$html$Html$Events$on,
-								'change',
-								A2(elm$json$Json$Decode$map, author$project$Main$SetHeightUnit, elm$html$Html$Events$targetValue))
+								elm$html$Html$Attributes$class('input-group-append')
 							]),
 						_List_fromArray(
 							[
 								A2(
-								elm$html$Html$option,
+								elm$html$Html$div,
 								_List_fromArray(
 									[
-										elm$html$Html$Attributes$selected(!unit),
-										elm$html$Html$Attributes$value('cm')
+										elm$html$Html$Attributes$class('input-group-text')
 									]),
 								_List_fromArray(
 									[
-										elm$html$Html$text('Centimetres')
+										elm$html$Html$text(' µg/mL')
 									])),
 								A2(
-								elm$html$Html$option,
+								elm$html$Html$select,
 								_List_fromArray(
 									[
-										elm$html$Html$Attributes$selected(unit === 1),
-										elm$html$Html$Attributes$value('inch')
+										elm$html$Html$Attributes$class('form-control-lg'),
+										A2(elm$html$Html$Events$on, 'change', hourHandler)
 									]),
 								_List_fromArray(
 									[
-										elm$html$Html$text('Inches')
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('6'),
+												elm$html$Html$Attributes$selected(hour === 6)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 6 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('7'),
+												elm$html$Html$Attributes$selected(hour === 7)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 7 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('8'),
+												elm$html$Html$Attributes$selected(hour === 8)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 8 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('9'),
+												elm$html$Html$Attributes$selected(hour === 9)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 9 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('10'),
+												elm$html$Html$Attributes$selected(hour === 10)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 10 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('11'),
+												elm$html$Html$Attributes$selected(hour === 11)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 11 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('12'),
+												elm$html$Html$Attributes$selected(hour === 12)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 12 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('13'),
+												elm$html$Html$Attributes$selected(hour === 13)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 13 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('14'),
+												elm$html$Html$Attributes$selected(hour === 14)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 14 hours')
+											]))
 									]))
 							]))
-					]))
-			]));
+					]));
+		} else {
+			var level = mLevel.a;
+			var levelHandler = function (s) {
+				return update(
+					A3(
+						author$project$Gentamicin$setGentamicinMeasurement,
+						model,
+						elm$core$Maybe$Just(hour),
+						elm$core$String$toFloat(s)));
+			};
+			var hourHandler = A2(
+				elm$json$Json$Decode$map,
+				function (hStr) {
+					return update(
+						A3(
+							author$project$Gentamicin$setGentamicinMeasurement,
+							model,
+							elm$core$String$toInt(hStr),
+							elm$core$Maybe$Just(level)));
+				},
+				elm$html$Html$Events$targetValue);
+			return A2(
+				elm$html$Html$div,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('input-group')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						author$project$Gentamicin$numericInput,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('form-control-lg'),
+								elm$html$Html$Events$onInput(levelHandler)
+							]),
+						_List_Nil),
+						A2(
+						elm$html$Html$div,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('input-group-append')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								elm$html$Html$div,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('input-group-text')
+									]),
+								_List_fromArray(
+									[
+										elm$html$Html$text('µg/mL')
+									])),
+								A2(
+								elm$html$Html$select,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('form-control-lg'),
+										A2(elm$html$Html$Events$on, 'change', hourHandler)
+									]),
+								_List_fromArray(
+									[
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('6'),
+												elm$html$Html$Attributes$selected(hour === 6)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 6 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('7'),
+												elm$html$Html$Attributes$selected(hour === 7)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 7 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('8'),
+												elm$html$Html$Attributes$selected(hour === 8)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 8 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('9'),
+												elm$html$Html$Attributes$selected(hour === 9)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 9 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('10'),
+												elm$html$Html$Attributes$selected(hour === 10)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 10 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('11'),
+												elm$html$Html$Attributes$selected(hour === 11)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 11 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('12'),
+												elm$html$Html$Attributes$selected(hour === 12)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 12 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('13'),
+												elm$html$Html$Attributes$selected(hour === 13)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 13 hours')
+											])),
+										A2(
+										elm$html$Html$option,
+										_List_fromArray(
+											[
+												elm$html$Html$Attributes$value('14'),
+												elm$html$Html$Attributes$selected(hour === 14)
+											]),
+										_List_fromArray(
+											[
+												elm$html$Html$text('after 14 hours')
+											]))
+									]))
+							]))
+					]));
+		}
+	});
+var author$project$Gentamicin$Cm = 0;
+var author$project$Gentamicin$cmToString = function (h) {
+	var metres = (h / 100) | 0;
+	var cm = h % 100;
+	return (!metres) ? (elm$core$String$fromInt(h) + ' cm') : (elm$core$String$fromInt(metres) + ('m ' + (elm$core$String$fromInt(cm) + 'cm')));
 };
-var author$project$Main$maybeToString = F2(
+var author$project$Gentamicin$inchToString = function (h) {
+	var inches = h % 12;
+	var feet = (h / 12) | 0;
+	return (!feet) ? (elm$core$String$fromInt(h) + ' inches') : (elm$core$String$fromInt(feet) + (' feet ' + (elm$core$String$fromInt(inches) + ' inches')));
+};
+var author$project$Gentamicin$heightToString = function (_n0) {
+	var unit = _n0.a;
+	var h = _n0.b;
+	if (!unit) {
+		return author$project$Gentamicin$cmToString(h);
+	} else {
+		return author$project$Gentamicin$inchToString(h);
+	}
+};
+var author$project$Gentamicin$Height = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var author$project$Gentamicin$stringToHeightUnit = function (str) {
+	switch (str) {
+		case 'cm':
+			return elm$core$Maybe$Just(0);
+		case 'inch':
+			return elm$core$Maybe$Just(1);
+		default:
+			return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$Gentamicin$setHeightUnit = F2(
+	function (model, unitStr) {
+		var _n0 = author$project$Gentamicin$stringToHeightUnit(unitStr);
+		if (!_n0.$) {
+			var u = _n0.a;
+			var _n1 = model.h;
+			if (!_n1.$) {
+				var _n2 = _n1.a;
+				var h = _n2.b;
+				return _Utils_update(
+					model,
+					{
+						E: u,
+						h: elm$core$Maybe$Just(
+							A2(author$project$Gentamicin$Height, u, h))
+					});
+			} else {
+				return _Utils_update(
+					model,
+					{E: u});
+			}
+		} else {
+			return model;
+		}
+	});
+var author$project$Gentamicin$setHeightValue = F3(
+	function (model, unit, heightStr) {
+		return _Utils_update(
+			model,
+			{
+				h: A2(
+					elm$core$Maybe$map,
+					author$project$Gentamicin$Height(unit),
+					elm$core$String$toInt(heightStr))
+			});
+	});
+var author$project$Gentamicin$heightInput = F2(
+	function (update, model) {
+		var unit = A2(
+			elm$core$Maybe$withDefault,
+			model.E,
+			A2(
+				elm$core$Maybe$map,
+				function (_n1) {
+					var u = _n1.a;
+					return u;
+				},
+				model.h));
+		var h = A2(
+			elm$core$Maybe$map,
+			function (_n0) {
+				var h_ = _n0.b;
+				return h_;
+			},
+			model.h);
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('input-group')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					author$project$Gentamicin$numericInput,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('form-control-lg'),
+							elm$html$Html$Events$onInput(
+							A2(
+								elm$core$Basics$composeL,
+								update,
+								A2(author$project$Gentamicin$setHeightValue, model, unit)))
+						]),
+					_List_Nil),
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('input-group-append')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$div,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('input-group-text')
+								]),
+							_List_fromArray(
+								[
+									elm$html$Html$text(
+									A2(
+										elm$core$Maybe$withDefault,
+										'',
+										A2(
+											elm$core$Maybe$map,
+											function (s) {
+												return ' (' + (s + ')');
+											},
+											A2(elm$core$Maybe$map, author$project$Gentamicin$heightToString, model.h))))
+								])),
+							A2(
+							elm$html$Html$select,
+							_List_fromArray(
+								[
+									A2(
+									elm$html$Html$Events$on,
+									'change',
+									A2(
+										elm$json$Json$Decode$map,
+										A2(
+											elm$core$Basics$composeL,
+											update,
+											author$project$Gentamicin$setHeightUnit(model)),
+										elm$html$Html$Events$targetValue))
+								]),
+							_List_fromArray(
+								[
+									A2(
+									elm$html$Html$option,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$selected(!unit),
+											elm$html$Html$Attributes$value('cm')
+										]),
+									_List_fromArray(
+										[
+											elm$html$Html$text('Centimetres')
+										])),
+									A2(
+									elm$html$Html$option,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$selected(unit === 1),
+											elm$html$Html$Attributes$value('inch')
+										]),
+									_List_fromArray(
+										[
+											elm$html$Html$text('Inches')
+										]))
+								]))
+						]))
+				]));
+	});
+var author$project$Gentamicin$maybeToString = F2(
 	function (f, s) {
 		if (s.$ === 1) {
 			return '';
@@ -6004,68 +5993,89 @@ var author$project$Main$maybeToString = F2(
 			return f(s_);
 		}
 	});
-var author$project$Main$roundFloat = F2(
+var author$project$Gentamicin$roundFloat = F2(
 	function (dp, x) {
 		return elm$core$Basics$round(x * 100) / 100;
 	});
-var author$project$Main$SetSerumCreatinine = function (a) {
-	return {$: 5, a: a};
-};
+var author$project$Gentamicin$SerumCreatinine = elm$core$Basics$identity;
+var author$project$Gentamicin$setSerumCreatinine = F2(
+	function (model, scStr) {
+		return _Utils_update(
+			model,
+			{
+				H: A2(
+					elm$core$Maybe$map,
+					elm$core$Basics$identity,
+					elm$core$String$toFloat(scStr))
+			});
+	});
 var elm$core$String$fromFloat = _String_fromNumber;
-var author$project$Main$serumCreatinineInput = function (_n0) {
-	var serumCreatinine = _n0.H;
-	var scStr = A2(
-		elm$core$Maybe$withDefault,
-		'',
-		A2(
-			elm$core$Maybe$map,
-			function (_n1) {
-				var sc = _n1;
-				return elm$core$String$fromFloat(sc);
-			},
-			serumCreatinine));
-	return A2(
-		elm$html$Html$div,
-		_List_fromArray(
-			[
-				elm$html$Html$Attributes$class('input-group')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				author$project$Main$numericInput,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('form-control-lg'),
-						elm$html$Html$Events$onInput(author$project$Main$SetSerumCreatinine)
-					]),
-				_List_Nil),
-				A2(
-				elm$html$Html$div,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('input-group-append')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						elm$html$Html$div,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$class('input-group-text')
-							]),
-						_List_fromArray(
-							[
-								elm$html$Html$text(' µmol/L')
-							]))
-					]))
-			]));
-};
-var author$project$Main$Male = 0;
-var author$project$Main$SetSex = function (a) {
-	return {$: 0, a: a};
-};
-var author$project$Main$stringToSex = function (str) {
+var author$project$Gentamicin$serumCreatinineInput = F2(
+	function (update, model) {
+		var scStr = A2(
+			elm$core$Maybe$withDefault,
+			'',
+			A2(
+				elm$core$Maybe$map,
+				function (_n0) {
+					var sc = _n0;
+					return elm$core$String$fromFloat(sc);
+				},
+				model.H));
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('input-group')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					author$project$Gentamicin$numericInput,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('form-control-lg'),
+							elm$html$Html$Events$onInput(
+							A2(
+								elm$core$Basics$composeL,
+								update,
+								author$project$Gentamicin$setSerumCreatinine(model)))
+						]),
+					_List_Nil),
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('input-group-append')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$div,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('input-group-text')
+								]),
+							_List_fromArray(
+								[
+									elm$html$Html$text(' µmol/L')
+								]))
+						]))
+				]));
+	});
+var author$project$Gentamicin$Male = 0;
+var author$project$Gentamicin$setSex = F2(
+	function (model, mSex) {
+		if (!mSex.$) {
+			var s = mSex.a;
+			return _Utils_update(
+				model,
+				{r: s});
+		} else {
+			return model;
+		}
+	});
+var author$project$Gentamicin$stringToSex = function (str) {
 	switch (str) {
 		case 'male':
 			return elm$core$Maybe$Just(0);
@@ -6075,99 +6085,118 @@ var author$project$Main$stringToSex = function (str) {
 			return elm$core$Maybe$Nothing;
 	}
 };
-var author$project$Main$sexInput = function (_n0) {
-	var sex = _n0.x;
-	return A2(
-		elm$html$Html$select,
-		_List_fromArray(
-			[
-				elm$html$Html$Attributes$class('form-control-lg'),
-				A2(
-				elm$html$Html$Events$on,
-				'change',
-				A2(
-					elm$json$Json$Decode$map,
-					A2(elm$core$Basics$composeL, author$project$Main$SetSex, author$project$Main$stringToSex),
-					elm$html$Html$Events$targetValue))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				elm$html$Html$option,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$value('male'),
-						elm$html$Html$Attributes$selected(!sex)
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text('Male')
-					])),
-				A2(
-				elm$html$Html$option,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$value('female'),
-						elm$html$Html$Attributes$selected(sex === 1)
-					]),
-				_List_fromArray(
-					[
-						elm$html$Html$text('Female')
-					]))
-			]));
-};
-var author$project$Main$SetWeight = function (a) {
-	return {$: 3, a: a};
-};
-var author$project$Main$weightInput = function (_n0) {
-	var weight = _n0.s;
-	var weightStr = A2(
-		elm$core$Maybe$withDefault,
-		'',
-		A2(
-			elm$core$Maybe$map,
-			function (_n1) {
-				var w = _n1;
-				return elm$core$String$fromInt(w);
-			},
-			weight));
-	return A2(
-		elm$html$Html$div,
-		_List_fromArray(
-			[
-				elm$html$Html$Attributes$class('input-group')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				author$project$Main$numericInput,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('form-control-lg'),
-						elm$html$Html$Events$onInput(author$project$Main$SetWeight)
-					]),
-				_List_Nil),
-				A2(
-				elm$html$Html$div,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('input-group-append')
-					]),
-				_List_fromArray(
-					[
+var author$project$Gentamicin$sexInput = F2(
+	function (update, model) {
+		return A2(
+			elm$html$Html$select,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('form-control-lg'),
+					A2(
+					elm$html$Html$Events$on,
+					'change',
+					A2(
+						elm$json$Json$Decode$map,
 						A2(
-						elm$html$Html$div,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$class('input-group-text')
-							]),
-						_List_fromArray(
-							[
-								elm$html$Html$text('kg')
-							]))
-					]))
-			]));
-};
+							elm$core$Basics$composeL,
+							A2(
+								elm$core$Basics$composeL,
+								update,
+								author$project$Gentamicin$setSex(model)),
+							author$project$Gentamicin$stringToSex),
+						elm$html$Html$Events$targetValue))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$option,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$value('male'),
+							elm$html$Html$Attributes$selected(!model.r)
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Male')
+						])),
+					A2(
+					elm$html$Html$option,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$value('female'),
+							elm$html$Html$Attributes$selected(model.r === 1)
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Female')
+						]))
+				]));
+	});
+var author$project$Gentamicin$Weight = elm$core$Basics$identity;
+var author$project$Gentamicin$setWeight = F2(
+	function (model, weightStr) {
+		return _Utils_update(
+			model,
+			{
+				t: A2(
+					elm$core$Maybe$map,
+					elm$core$Basics$identity,
+					elm$core$String$toInt(weightStr))
+			});
+	});
+var author$project$Gentamicin$weightInput = F2(
+	function (update, model) {
+		var weightStr = A2(
+			elm$core$Maybe$withDefault,
+			'',
+			A2(
+				elm$core$Maybe$map,
+				function (_n0) {
+					var w = _n0;
+					return elm$core$String$fromInt(w);
+				},
+				model.t));
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('input-group')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					author$project$Gentamicin$numericInput,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('form-control-lg'),
+							elm$html$Html$Events$onInput(
+							A2(
+								elm$core$Basics$composeL,
+								update,
+								author$project$Gentamicin$setWeight(model)))
+						]),
+					_List_Nil),
+					A2(
+					elm$html$Html$div,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('input-group-append')
+						]),
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$div,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('input-group-text')
+								]),
+							_List_fromArray(
+								[
+									elm$html$Html$text('kg')
+								]))
+						]))
+				]));
+	});
 var elm$core$List$map = F2(
 	function (f, xs) {
 		return A3(
@@ -6195,196 +6224,162 @@ var elm$core$List$maximum = function (list) {
 var elm$html$Html$form = _VirtualDom_node('form');
 var elm$html$Html$h4 = _VirtualDom_node('h4');
 var elm$html$Html$label = _VirtualDom_node('label');
-var author$project$Main$view = function (model) {
-	var weight = author$project$Main$isObese(model) ? author$project$Main$correctedBodyWeight(model) : author$project$Main$idealBodyWeight(model);
-	var weightStr = function () {
-		if (weight.$ === 1) {
-			return '';
-		} else {
-			var w = weight.a;
-			return author$project$Main$isObese(model) ? (elm$core$String$fromInt(
-				elm$core$Basics$round(w)) + ' (corrected bodyweight)') : (elm$core$String$fromInt(
-				elm$core$Basics$round(w)) + ' (ideal bodyweight)');
-		}
-	}();
-	var obese = function () {
-		var _n4 = author$project$Main$isObese(model);
-		if (_n4) {
-			return 'Yes';
-		} else {
-			return 'No';
-		}
-	}();
-	var mkTable = function (elems) {
-		var toRow = function (_n3) {
-			var name = _n3.a;
-			var value = _n3.b;
-			return A2(
-				elm$html$Html$tr,
+var author$project$Gentamicin$view = F2(
+	function (update, model) {
+		var weight = author$project$Gentamicin$isObese(model) ? author$project$Gentamicin$correctedBodyWeight(model) : author$project$Gentamicin$idealBodyWeight(model);
+		var weightStr = function () {
+			if (weight.$ === 1) {
+				return '';
+			} else {
+				var w = weight.a;
+				return author$project$Gentamicin$isObese(model) ? (elm$core$String$fromInt(
+					elm$core$Basics$round(w)) + ' (corrected bodyweight)') : (elm$core$String$fromInt(
+					elm$core$Basics$round(w)) + ' (ideal bodyweight)');
+			}
+		}();
+		var obese = function () {
+			var _n4 = author$project$Gentamicin$isObese(model);
+			if (_n4) {
+				return 'Yes';
+			} else {
+				return 'No';
+			}
+		}();
+		var mkTable = function (elems) {
+			var toRow = function (_n3) {
+				var name = _n3.a;
+				var value = _n3.b;
+				return A2(
+					elm$html$Html$tr,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[
+									A2(
+									elm$html$Html$label,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text(name)
+										]))
+								])),
+							A2(
+							elm$html$Html$td,
+							_List_Nil,
+							_List_fromArray(
+								[value]))
+						]));
+			};
+			var rows = A2(elm$core$List$map, toRow, elems);
+			return A2(elm$html$Html$table, _List_Nil, rows);
+		};
+		var dailyInitialDose = function () {
+			if (weight.$ === 1) {
+				return elm$core$Maybe$Nothing;
+			} else {
+				var w = weight.a;
+				var mg = A2(elm$core$List$range, 3, 5);
+				return elm$core$List$maximum(
+					A2(
+						elm$core$List$map,
+						function (e) {
+							return (e * w) / 3;
+						},
+						mg));
+			}
+		}();
+		var clearance = A2(
+			author$project$Gentamicin$maybeToString,
+			elm$core$String$fromFloat,
+			A2(
+				elm$core$Maybe$map,
+				function (_n1) {
+					var c = _n1;
+					return A2(author$project$Gentamicin$roundFloat, 2, c);
+				},
+				author$project$Gentamicin$creatinineClearance(model)));
+		var output = _List_fromArray(
+			[
+				A2(
+				elm$html$Html$h4,
 				_List_Nil,
 				_List_fromArray(
 					[
+						elm$html$Html$text('Calculated attributes')
+					])),
+				A2(
+				elm$html$Html$table,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('table')
+					]),
+				_List_fromArray(
+					[
 						A2(
-						elm$html$Html$td,
+						elm$html$Html$tr,
 						_List_Nil,
 						_List_fromArray(
 							[
 								A2(
-								elm$html$Html$label,
+								elm$html$Html$td,
 								_List_Nil,
 								_List_fromArray(
 									[
-										elm$html$Html$text(name)
+										elm$html$Html$text('Obese')
+									])),
+								A2(
+								elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text(obese)
 									]))
 							])),
 						A2(
-						elm$html$Html$td,
+						elm$html$Html$tr,
 						_List_Nil,
 						_List_fromArray(
-							[value]))
-					]));
-		};
-		var rows = A2(elm$core$List$map, toRow, elems);
-		return A2(elm$html$Html$table, _List_Nil, rows);
-	};
-	var dailyInitialDose = function () {
-		if (weight.$ === 1) {
-			return elm$core$Maybe$Nothing;
-		} else {
-			var w = weight.a;
-			var mg = A2(elm$core$List$range, 3, 5);
-			return elm$core$List$maximum(
-				A2(
-					elm$core$List$map,
-					function (e) {
-						return (e * w) / 3;
-					},
-					mg));
-		}
-	}();
-	var clearance = A2(
-		author$project$Main$maybeToString,
-		elm$core$String$fromFloat,
-		A2(
-			elm$core$Maybe$map,
-			function (_n1) {
-				var c = _n1;
-				return A2(author$project$Main$roundFloat, 2, c);
-			},
-			author$project$Main$creatinineClearance(model)));
-	var output = _List_fromArray(
-		[
-			A2(
-			elm$html$Html$h4,
-			_List_Nil,
-			_List_fromArray(
-				[
-					elm$html$Html$text('Calculated attributes')
-				])),
-			A2(
-			elm$html$Html$table,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$class('table')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					elm$html$Html$tr,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							elm$html$Html$td,
-							_List_Nil,
-							_List_fromArray(
-								[
-									elm$html$Html$text('Obese')
-								])),
-							A2(
-							elm$html$Html$td,
-							_List_Nil,
-							_List_fromArray(
-								[
-									elm$html$Html$text(obese)
-								]))
-						])),
-					A2(
-					elm$html$Html$tr,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							elm$html$Html$td,
-							_List_Nil,
-							_List_fromArray(
-								[
-									elm$html$Html$text('Weight')
-								])),
-							A2(
-							elm$html$Html$td,
-							_List_Nil,
-							_List_fromArray(
-								[
-									elm$html$Html$text(weightStr)
-								]))
-						])),
-					A2(
-					elm$html$Html$tr,
-					_List_Nil,
-					_List_fromArray(
-						[
-							A2(
-							elm$html$Html$td,
-							_List_Nil,
-							_List_fromArray(
-								[
-									elm$html$Html$text('Creatinine Clearance')
-								])),
-							A2(
-							elm$html$Html$td,
-							_List_Nil,
-							_List_fromArray(
-								[
-									elm$html$Html$text(clearance)
-								]))
-						]))
-				])),
-			A2(
-			elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					elm$html$Html$h4,
-					_List_Nil,
-					_List_fromArray(
-						[
-							elm$html$Html$text('Dosing Regimen')
-						])),
-					author$project$Main$dosageInstruction(model)
-				]))
-		]);
-	var baseInputs = _List_fromArray(
-		[
-			_Utils_Tuple2('Sex', author$project$Main$sexInput),
-			_Utils_Tuple2('Height', author$project$Main$heightInput),
-			_Utils_Tuple2('Age', author$project$Main$ageInput),
-			_Utils_Tuple2('Weight', author$project$Main$weightInput),
-			_Utils_Tuple2('Serum Creatinine', author$project$Main$serumCreatinineInput),
-			_Utils_Tuple2('Dosage', author$project$Main$dosageInput)
-		]);
-	var inputs = (model.t === 1) ? _Utils_ap(
-		baseInputs,
-		_List_fromArray(
-			[
-				_Utils_Tuple2('Gentamicin', author$project$Main$gentamicinLevelInput)
-			])) : baseInputs;
-	return A2(
-		elm$html$Html$div,
-		_List_Nil,
-		_List_fromArray(
-			[
+							[
+								A2(
+								elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text('Weight')
+									])),
+								A2(
+								elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text(weightStr)
+									]))
+							])),
+						A2(
+						elm$html$Html$tr,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text('Creatinine Clearance')
+									])),
+								A2(
+								elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										elm$html$Html$text(clearance)
+									]))
+							]))
+					])),
 				A2(
 				elm$html$Html$div,
 				_List_Nil,
@@ -6395,30 +6390,160 @@ var author$project$Main$view = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								elm$html$Html$text('Enter patient details')
+								elm$html$Html$text('Dosing Regimen')
 							])),
-						A2(
-						elm$html$Html$form,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$class('col-auto')
-							]),
-						_List_fromArray(
-							[
-								mkTable(
-								A2(
-									elm$core$List$map,
-									function (_n0) {
-										var n = _n0.a;
-										var f = _n0.b;
-										return _Utils_Tuple2(
-											n,
-											f(model));
-									},
-									inputs))
-							]))
-					])),
-				A2(elm$html$Html$div, _List_Nil, output)
+						author$project$Gentamicin$dosageInstruction(model)
+					]))
+			]);
+		var baseInputs = _List_fromArray(
+			[
+				_Utils_Tuple2(
+				'Sex',
+				author$project$Gentamicin$sexInput(update)),
+				_Utils_Tuple2(
+				'Height',
+				author$project$Gentamicin$heightInput(update)),
+				_Utils_Tuple2(
+				'Age',
+				author$project$Gentamicin$ageInput(update)),
+				_Utils_Tuple2(
+				'Weight',
+				author$project$Gentamicin$weightInput(update)),
+				_Utils_Tuple2(
+				'Serum Creatinine',
+				author$project$Gentamicin$serumCreatinineInput(update)),
+				_Utils_Tuple2(
+				'Dosage',
+				author$project$Gentamicin$dosageInput(update))
+			]);
+		var inputs = (model.u === 1) ? _Utils_ap(
+			baseInputs,
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'Gentamicin',
+					author$project$Gentamicin$gentamicinLevelInput(update))
+				])) : baseInputs;
+		return A2(
+			elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$h4,
+							_List_Nil,
+							_List_fromArray(
+								[
+									elm$html$Html$text('Enter patient details')
+								])),
+							A2(
+							elm$html$Html$form,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('col-auto')
+								]),
+							_List_fromArray(
+								[
+									mkTable(
+									A2(
+										elm$core$List$map,
+										function (_n0) {
+											var n = _n0.a;
+											var f = _n0.b;
+											return _Utils_Tuple2(
+												n,
+												f(model));
+										},
+										inputs))
+								]))
+						])),
+					A2(elm$html$Html$div, _List_Nil, output)
+				]));
+	});
+var author$project$Main$Opiate = function (a) {
+	return {$: 1, a: a};
+};
+var author$project$Main$SetPage = elm$core$Basics$identity;
+var author$project$Opiate$view = F2(
+	function (update, model) {
+		return A2(elm$html$Html$div, _List_Nil, _List_Nil);
+	});
+var author$project$Main$body = function (page) {
+	if (!page.$) {
+		var model = page.a;
+		return A2(
+			author$project$Gentamicin$view,
+			function (m) {
+				return author$project$Main$Gentamicin(m);
+			},
+			model);
+	} else {
+		var model = page.a;
+		return A2(
+			author$project$Opiate$view,
+			function (m) {
+				return author$project$Main$Opiate(m);
+			},
+			model);
+	}
+};
+var author$project$Opiate$init = {};
+var elm$html$Html$a = _VirtualDom_node('a');
+var elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		elm$html$Html$Events$on,
+		'click',
+		elm$json$Json$Decode$succeed(msg));
+};
+var author$project$Main$header = A2(
+	elm$html$Html$div,
+	_List_Nil,
+	_List_fromArray(
+		[
+			A2(
+			elm$html$Html$a,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$href('#'),
+					elm$html$Html$Events$onClick(
+					author$project$Main$Gentamicin(author$project$Gentamicin$init))
+				]),
+			_List_fromArray(
+				[
+					elm$html$Html$text('Gentamicin')
+				])),
+			A2(
+			elm$html$Html$a,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$href('#'),
+					elm$html$Html$Events$onClick(
+					author$project$Main$Opiate(author$project$Opiate$init))
+				]),
+			_List_fromArray(
+				[
+					elm$html$Html$text('Opiates')
+				]))
+		]));
+var author$project$Main$view = function (model) {
+	return A2(
+		elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				author$project$Main$header,
+				author$project$Main$body(model.P)
 			]));
 };
 var elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -6540,7 +6665,7 @@ var elm$core$String$left = F2(
 var elm$core$String$contains = _String_contains;
 var elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {ac: fragment, ad: host, ah: path, aj: port_, am: protocol, an: query};
+		return {ad: fragment, ae: host, ai: path, ak: port_, an: protocol, ao: query};
 	});
 var elm$url$Url$chompBeforePath = F5(
 	function (protocol, path, params, frag, str) {
@@ -6647,22 +6772,22 @@ var elm$url$Url$fromString = function (str) {
 var elm$browser$Browser$sandbox = function (impl) {
 	return _Browser_element(
 		{
-			aD: function (_n0) {
-				return _Utils_Tuple2(impl.aD, elm$core$Platform$Cmd$none);
+			aE: function (_n0) {
+				return _Utils_Tuple2(impl.aE, elm$core$Platform$Cmd$none);
 			},
-			aJ: function (_n1) {
+			aK: function (_n1) {
 				return elm$core$Platform$Sub$none;
 			},
-			aL: F2(
+			aM: F2(
 				function (msg, model) {
 					return _Utils_Tuple2(
-						A2(impl.aL, msg, model),
+						A2(impl.aM, msg, model),
 						elm$core$Platform$Cmd$none);
 				}),
-			aN: impl.aN
+			aO: impl.aO
 		});
 };
 var author$project$Main$main = elm$browser$Browser$sandbox(
-	{aD: author$project$Main$init, aL: author$project$Main$update, aN: author$project$Main$view});
+	{aE: author$project$Main$init, aM: author$project$Main$update, aO: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$succeed(0))(0)}});}(this));
