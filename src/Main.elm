@@ -5,7 +5,7 @@ import Gentamicin
 import Html exposing (Html, a, div, text)
 import Html.Attributes exposing (href)
 import Html.Events exposing (onClick)
-import Opiate
+import Opioid
 
 
 type alias Model =
@@ -14,7 +14,7 @@ type alias Model =
 
 type Page
     = Gentamicin Gentamicin.Model
-    | Opiate Opiate.Model
+    | Opioid Opioid.Model
 
 
 type Msg
@@ -49,7 +49,7 @@ header : Html Msg
 header =
     div []
         [ a [ href "#", onClick (SetPage (Gentamicin Gentamicin.init)) ] [ text "Gentamicin" ]
-        , a [ href "#", onClick (SetPage (Opiate Opiate.init)) ] [ text "Opiates" ]
+        , a [ href "#", onClick (SetPage (Opioid Opioid.init)) ] [ text "Opioids" ]
         ]
 
 
@@ -59,5 +59,5 @@ body page =
         Gentamicin model ->
             Gentamicin.view (\m -> SetPage (Gentamicin m)) model
 
-        Opiate model ->
-            Opiate.view (\m -> SetPage (Opiate m)) model
+        Opioid model ->
+            Opioid.view (\m -> SetPage (Opioid m)) model

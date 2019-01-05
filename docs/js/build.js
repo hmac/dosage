@@ -586,11 +586,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.X.G === region.ab.G)
+	if (region._.J === region.ae.J)
 	{
-		return 'on line ' + region.X.G;
+		return 'on line ' + region._.J;
 	}
-	return 'on lines ' + region.X.G + ' through ' + region.ab.G;
+	return 'on lines ' + region._.J + ' through ' + region.ae.J;
 }
 
 
@@ -1841,9 +1841,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aE,
-		impl.aM,
-		impl.aK,
+		impl.aH,
+		impl.aP,
+		impl.aN,
 		function() { return function() {} }
 	);
 });
@@ -2644,8 +2644,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		l: func(record.l),
-		Y: record.Y,
-		W: record.W
+		aa: record.aa,
+		Z: record.Z
 	}
 });
 
@@ -2914,10 +2914,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.l;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.Y;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aa;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.W) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.Z) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3863,11 +3863,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aE,
-		impl.aM,
-		impl.aK,
+		impl.aH,
+		impl.aP,
+		impl.aN,
 		function(sendToApp, initialModel) {
-			var view = impl.aO;
+			var view = impl.aR;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3899,12 +3899,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.aE,
-		impl.aM,
-		impl.aK,
+		impl.aH,
+		impl.aP,
+		impl.aN,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.I && impl.I(sendToApp)
-			var view = impl.aO;
+			var divertHrefToApp = impl.L && impl.L(sendToApp)
+			var view = impl.aR;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3912,12 +3912,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ax);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aA);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aL) && (_VirtualDom_doc.title = title = doc.aL);
+				(title !== doc.aO) && (_VirtualDom_doc.title = title = doc.aO);
 			});
 		}
 	);
@@ -3968,12 +3968,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aG;
-	var onUrlRequest = impl.aH;
+	var onUrlChange = impl.aJ;
+	var onUrlRequest = impl.aK;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		I: function(sendToApp)
+		L: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -3989,9 +3989,9 @@ function _Browser_application(impl)
 					var next = elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.an === next.an
-							&& curr.ae === next.ae
-							&& curr.ak.a === next.ak.a
+							&& curr.aq === next.aq
+							&& curr.ah === next.ah
+							&& curr.an.a === next.an.a
 						)
 							? elm$browser$Browser$Internal(next)
 							: elm$browser$Browser$External(href)
@@ -3999,13 +3999,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		aE: function(flags)
+		aH: function(flags)
 		{
-			return A3(impl.aE, flags, _Browser_getUrl(), key);
+			return A3(impl.aH, flags, _Browser_getUrl(), key);
 		},
-		aO: impl.aO,
-		aM: impl.aM,
-		aK: impl.aK
+		aR: impl.aR,
+		aP: impl.aP,
+		aN: impl.aN
 	});
 }
 
@@ -4071,17 +4071,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { aC: 'hidden', D: 'visibilitychange' }
+		? { aF: 'hidden', G: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { aC: 'mozHidden', D: 'mozvisibilitychange' }
+		? { aF: 'mozHidden', G: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { aC: 'msHidden', D: 'msvisibilitychange' }
+		? { aF: 'msHidden', G: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { aC: 'webkitHidden', D: 'webkitvisibilitychange' }
-		: { aC: 'hidden', D: 'visibilitychange' };
+		? { aF: 'webkitHidden', G: 'webkitvisibilitychange' }
+		: { aF: 'hidden', G: 'visibilitychange' };
 }
 
 
@@ -4162,11 +4162,11 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		ar: _Browser_getScene(),
-		au: {
-			Q: _Browser_window.pageXOffset,
-			R: _Browser_window.pageYOffset,
-			A: _Browser_doc.documentElement.clientWidth,
+		au: _Browser_getScene(),
+		ax: {
+			T: _Browser_window.pageXOffset,
+			U: _Browser_window.pageYOffset,
+			D: _Browser_doc.documentElement.clientWidth,
 			h: _Browser_doc.documentElement.clientHeight
 		}
 	};
@@ -4177,7 +4177,7 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		A: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		D: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
 		h: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
@@ -4201,14 +4201,14 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			ar: {
-				A: node.scrollWidth,
+			au: {
+				D: node.scrollWidth,
 				h: node.scrollHeight
 			},
-			au: {
-				Q: node.scrollLeft,
-				R: node.scrollTop,
-				A: node.clientWidth,
+			ax: {
+				T: node.scrollLeft,
+				U: node.scrollTop,
+				D: node.clientWidth,
 				h: node.clientHeight
 			}
 		};
@@ -4239,17 +4239,17 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			ar: _Browser_getScene(),
-			au: {
-				Q: x,
-				R: y,
-				A: _Browser_doc.documentElement.clientWidth,
+			au: _Browser_getScene(),
+			ax: {
+				T: x,
+				U: y,
+				D: _Browser_doc.documentElement.clientWidth,
 				h: _Browser_doc.documentElement.clientHeight
 			},
-			az: {
-				Q: x + rect.left,
-				R: y + rect.top,
-				A: rect.width,
+			aC: {
+				T: x + rect.left,
+				U: y + rect.top,
+				D: rect.width,
 				h: rect.height
 			}
 		};
@@ -4370,27 +4370,27 @@ var elm$core$Set$toList = function (_n0) {
 	return elm$core$Dict$keys(dict);
 };
 var author$project$Gentamicin$init = {
-	B: elm$core$Maybe$Nothing,
-	E: 1,
-	u: 0,
-	F: _Utils_Tuple2(6, elm$core$Maybe$Nothing),
+	E: elm$core$Maybe$Nothing,
+	H: 1,
+	w: 0,
+	I: _Utils_Tuple2(6, elm$core$Maybe$Nothing),
 	h: elm$core$Maybe$Nothing,
-	H: elm$core$Maybe$Nothing,
-	r: 1,
-	t: elm$core$Maybe$Nothing
+	K: elm$core$Maybe$Nothing,
+	s: 1,
+	v: elm$core$Maybe$Nothing
 };
 var author$project$Main$Gentamicin = function (a) {
 	return {$: 0, a: a};
 };
 var author$project$Main$init = {
-	P: author$project$Main$Gentamicin(author$project$Gentamicin$init)
+	S: author$project$Main$Gentamicin(author$project$Gentamicin$init)
 };
 var author$project$Main$update = F2(
 	function (msg, model) {
 		var p = msg;
 		return _Utils_update(
 			model,
-			{P: p});
+			{S: p});
 	});
 var author$project$Gentamicin$Daily7mg = 1;
 var elm$core$Basics$append = _Utils_append;
@@ -4847,7 +4847,7 @@ var author$project$Gentamicin$setAge = F2(
 		return _Utils_update(
 			model,
 			{
-				B: A2(
+				E: A2(
 					elm$core$Maybe$map,
 					elm$core$Basics$identity,
 					elm$core$String$toInt(ageStr))
@@ -4971,7 +4971,7 @@ var author$project$Gentamicin$ageInput = F2(
 					var a = _n0;
 					return elm$core$String$fromInt(a);
 				},
-				model.B));
+				model.E));
 		return A2(
 			elm$html$Html$div,
 			_List_fromArray(
@@ -5018,7 +5018,7 @@ var author$project$Gentamicin$cmToInches = function (f) {
 	return elm$core$Basics$round(0.393701 * f);
 };
 var author$project$Gentamicin$idealBodyWeight = function (_n0) {
-	var sex = _n0.r;
+	var sex = _n0.s;
 	var height = _n0.h;
 	if (!height.$) {
 		var height_ = height.a;
@@ -5048,7 +5048,7 @@ var author$project$Gentamicin$idealBodyWeight = function (_n0) {
 };
 var author$project$Gentamicin$correctedBodyWeight = function (model) {
 	var _n0 = _Utils_Tuple2(
-		model.t,
+		model.v,
 		author$project$Gentamicin$idealBodyWeight(model));
 	if ((!_n0.a.$) && (!_n0.b.$)) {
 		var actual = _n0.a.a;
@@ -5060,10 +5060,10 @@ var author$project$Gentamicin$correctedBodyWeight = function (model) {
 };
 var author$project$Gentamicin$Clearance = elm$core$Basics$identity;
 var author$project$Gentamicin$creatinineClearance = function (_n0) {
-	var sex = _n0.r;
-	var age = _n0.B;
-	var weight = _n0.t;
-	var serumCreatinine = _n0.H;
+	var sex = _n0.s;
+	var age = _n0.E;
+	var weight = _n0.v;
+	var serumCreatinine = _n0.K;
 	var _n1 = _Utils_Tuple3(age, weight, serumCreatinine);
 	if (((!_n1.a.$) && (!_n1.b.$)) && (!_n1.c.$)) {
 		var a = _n1.a.a;
@@ -5086,7 +5086,7 @@ var author$project$Gentamicin$setDosage = F2(
 			var d = mDosage.a;
 			return _Utils_update(
 				model,
-				{u: d});
+				{w: d});
 		} else {
 			return model;
 		}
@@ -5127,7 +5127,7 @@ var elm$html$Html$Events$on = F2(
 	});
 var author$project$Gentamicin$dosageInput = F2(
 	function (update, model) {
-		var dosage = model.u;
+		var dosage = model.w;
 		return A2(
 			elm$html$Html$select,
 			_List_fromArray(
@@ -5219,10 +5219,10 @@ var author$project$Gentamicin$daily = F2(
 			var max = _n1.b;
 			return elm$core$Maybe$Just(
 				{
-					N: perKg,
-					S: following,
-					O: _Utils_Tuple2(min, max),
-					U: note
+					Q: perKg,
+					V: following,
+					R: _Utils_Tuple2(min, max),
+					X: note
 				});
 		}
 	});
@@ -5232,10 +5232,10 @@ var author$project$Gentamicin$daily5mgDosageInstruction = F2(
 		if (_n0.$ === 1) {
 			return _Utils_Tuple3('', '', '');
 		} else {
-			var base = _n0.a.N;
-			var initial = _n0.a.O;
-			var following = _n0.a.S;
-			var note = _n0.a.U;
+			var base = _n0.a.Q;
+			var initial = _n0.a.R;
+			var following = _n0.a.V;
+			var note = _n0.a.X;
 			var rangeStr = function (_n4) {
 				var a = _n4.a;
 				var b = _n4.b;
@@ -5292,14 +5292,14 @@ var author$project$Gentamicin$daily7mgDosageInstruction = F2(
 		if (_n0.$ === 1) {
 			return _Utils_Tuple3('', '', '');
 		} else {
-			var base = _n0.a.N;
-			var initial = _n0.a.O;
+			var base = _n0.a.Q;
+			var initial = _n0.a.R;
 			var initialStr = function () {
 				var _n7 = initial;
 				var max = _n7.b;
 				return elm$core$String$fromInt(max) + 'mg';
 			}();
-			var _n1 = model.F;
+			var _n1 = model.I;
 			var hour = _n1.a;
 			var mLevel = _n1.b;
 			var area = A2(
@@ -5349,7 +5349,7 @@ var author$project$Gentamicin$dividedDosageInstruction = F2(
 var author$project$Gentamicin$isObese = function (model) {
 	var _n0 = _Utils_Tuple2(
 		author$project$Gentamicin$idealBodyWeight(model),
-		model.t);
+		model.v);
 	if ((!_n0.a.$) && (!_n0.b.$)) {
 		var ibw = _n0.a.a;
 		var w = _n0.b.a;
@@ -5369,7 +5369,7 @@ var author$project$Gentamicin$dosageInstruction = function (model) {
 			return _Utils_Tuple3('', '', '');
 		} else {
 			var w = _n1.a;
-			var _n2 = model.u;
+			var _n2 = model.w;
 			switch (_n2) {
 				case 0:
 					return A2(author$project$Gentamicin$daily5mgDosageInstruction, model, w);
@@ -5462,14 +5462,14 @@ var author$project$Gentamicin$setGentamicinMeasurement = F3(
 			return _Utils_update(
 				model,
 				{
-					F: _Utils_Tuple2(hour, mLevel)
+					I: _Utils_Tuple2(hour, mLevel)
 				});
 		}
 	});
 var elm$core$String$toFloat = _String_toFloat;
 var author$project$Gentamicin$gentamicinLevelInput = F2(
 	function (update, model) {
-		var _n0 = model.F;
+		var _n0 = model.I;
 		var hour = _n0.a;
 		var mLevel = _n0.b;
 		if (mLevel.$ === 1) {
@@ -5851,14 +5851,14 @@ var author$project$Gentamicin$setHeightUnit = F2(
 				return _Utils_update(
 					model,
 					{
-						E: u,
+						H: u,
 						h: elm$core$Maybe$Just(
 							A2(author$project$Gentamicin$Height, u, h))
 					});
 			} else {
 				return _Utils_update(
 					model,
-					{E: u});
+					{H: u});
 			}
 		} else {
 			return model;
@@ -5879,7 +5879,7 @@ var author$project$Gentamicin$heightInput = F2(
 	function (update, model) {
 		var unit = A2(
 			elm$core$Maybe$withDefault,
-			model.E,
+			model.H,
 			A2(
 				elm$core$Maybe$map,
 				function (_n1) {
@@ -6003,7 +6003,7 @@ var author$project$Gentamicin$setSerumCreatinine = F2(
 		return _Utils_update(
 			model,
 			{
-				H: A2(
+				K: A2(
 					elm$core$Maybe$map,
 					elm$core$Basics$identity,
 					elm$core$String$toFloat(scStr))
@@ -6021,7 +6021,7 @@ var author$project$Gentamicin$serumCreatinineInput = F2(
 					var sc = _n0;
 					return elm$core$String$fromFloat(sc);
 				},
-				model.H));
+				model.K));
 		return A2(
 			elm$html$Html$div,
 			_List_fromArray(
@@ -6070,7 +6070,7 @@ var author$project$Gentamicin$setSex = F2(
 			var s = mSex.a;
 			return _Utils_update(
 				model,
-				{r: s});
+				{s: s});
 		} else {
 			return model;
 		}
@@ -6113,7 +6113,7 @@ var author$project$Gentamicin$sexInput = F2(
 					_List_fromArray(
 						[
 							elm$html$Html$Attributes$value('male'),
-							elm$html$Html$Attributes$selected(!model.r)
+							elm$html$Html$Attributes$selected(!model.s)
 						]),
 					_List_fromArray(
 						[
@@ -6124,7 +6124,7 @@ var author$project$Gentamicin$sexInput = F2(
 					_List_fromArray(
 						[
 							elm$html$Html$Attributes$value('female'),
-							elm$html$Html$Attributes$selected(model.r === 1)
+							elm$html$Html$Attributes$selected(model.s === 1)
 						]),
 					_List_fromArray(
 						[
@@ -6138,7 +6138,7 @@ var author$project$Gentamicin$setWeight = F2(
 		return _Utils_update(
 			model,
 			{
-				t: A2(
+				v: A2(
 					elm$core$Maybe$map,
 					elm$core$Basics$identity,
 					elm$core$String$toInt(weightStr))
@@ -6155,7 +6155,7 @@ var author$project$Gentamicin$weightInput = F2(
 					var w = _n0;
 					return elm$core$String$fromInt(w);
 				},
-				model.t));
+				model.v));
 		return A2(
 			elm$html$Html$div,
 			_List_fromArray(
@@ -6416,7 +6416,7 @@ var author$project$Gentamicin$view = F2(
 				'Dosage',
 				author$project$Gentamicin$dosageInput(update))
 			]);
-		var inputs = (model.u === 1) ? _Utils_ap(
+		var inputs = (model.w === 1) ? _Utils_ap(
 			baseInputs,
 			_List_fromArray(
 				[
@@ -6465,13 +6465,394 @@ var author$project$Gentamicin$view = F2(
 					A2(elm$html$Html$div, _List_Nil, output)
 				]));
 	});
-var author$project$Main$Opiate = function (a) {
+var author$project$Main$Opioid = function (a) {
 	return {$: 1, a: a};
 };
 var author$project$Main$SetPage = elm$core$Basics$identity;
-var author$project$Opiate$view = F2(
+var author$project$Opioid$potency = function (d) {
+	switch (d) {
+		case 0:
+			return 0.1;
+		case 1:
+			return 0.1;
+		case 2:
+			return 7.5;
+		case 3:
+			return 1;
+		case 4:
+			return 2;
+		case 5:
+			return 0.4;
+		default:
+			return 0.15;
+	}
+};
+var author$project$Opioid$dose = F3(
+	function (from, amount, to) {
+		var inMorphine = amount * author$project$Opioid$potency(from);
+		return inMorphine / author$project$Opioid$potency(to);
+	});
+var author$project$Drug$Codeine = 0;
+var author$project$Drug$Dihydrocodeine = 1;
+var author$project$Drug$Hydromorphone = 2;
+var author$project$Drug$Morphine = 3;
+var author$project$Drug$Oxycodone = 4;
+var author$project$Drug$Tapentadol = 5;
+var author$project$Drug$Tramadol = 6;
+var author$project$Drug$all = _List_fromArray(
+	[0, 1, 2, 3, 4, 5, 6]);
+var author$project$Drug$toString = function (d) {
+	switch (d) {
+		case 0:
+			return 'Codeine';
+		case 1:
+			return 'Dihydrocodeine';
+		case 2:
+			return 'Hydromorphone';
+		case 3:
+			return 'Morphine';
+		case 4:
+			return 'Oxycodone';
+		case 5:
+			return 'Tapentadol';
+		default:
+			return 'Tramadol';
+	}
+};
+var author$project$Opioid$drugSelect = F2(
+	function (current, onChange) {
+		var drugOption = function (d) {
+			return A2(
+				elm$html$Html$option,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$value(
+						author$project$Drug$toString(d)),
+						elm$html$Html$Attributes$selected(
+						_Utils_eq(d, current))
+					]),
+				_List_fromArray(
+					[
+						elm$html$Html$text(
+						author$project$Drug$toString(d))
+					]));
+		};
+		return A2(
+			elm$html$Html$select,
+			_List_fromArray(
+				[
+					elm$html$Html$Events$onInput(onChange)
+				]),
+			A2(elm$core$List$map, drugOption, author$project$Drug$all));
+	});
+var author$project$Opioid$equationFromMorphine = F2(
+	function (fromAmount, drug) {
+		return elm$core$String$fromFloat(fromAmount) + (' / ' + (elm$core$String$fromFloat(
+			author$project$Opioid$potency(drug)) + (' = ' + elm$core$String$fromFloat(
+			fromAmount / author$project$Opioid$potency(drug)))));
+	});
+var author$project$Opioid$equationToMorphine = F2(
+	function (fromAmount, drug) {
+		return elm$core$String$fromFloat(fromAmount) + (' * ' + (elm$core$String$fromFloat(
+			author$project$Opioid$potency(drug)) + (' = ' + elm$core$String$fromFloat(
+			fromAmount * author$project$Opioid$potency(drug)))));
+	});
+var elm$html$Html$br = _VirtualDom_node('br');
+var elm$html$Html$code = _VirtualDom_node('code');
+var elm$html$Html$strong = _VirtualDom_node('strong');
+var author$project$Opioid$explain = F3(
+	function (from, fromAmount, to) {
+		return A2(
+			elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$strong,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							author$project$Drug$toString(from))
+						])),
+					elm$html$Html$text(' has a potency ratio of '),
+					A2(
+					elm$html$Html$code,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							elm$core$String$fromFloat(
+								author$project$Opioid$potency(from)))
+						])),
+					elm$html$Html$text(', '),
+					elm$html$Html$text('therefore '),
+					A2(
+					elm$html$Html$code,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							elm$core$String$fromFloat(fromAmount))
+						])),
+					elm$html$Html$text(' mg of '),
+					A2(
+					elm$html$Html$strong,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							author$project$Drug$toString(from))
+						])),
+					elm$html$Html$text(' is equivalent to '),
+					A2(
+					elm$html$Html$code,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							A2(author$project$Opioid$equationToMorphine, fromAmount, from))
+						])),
+					elm$html$Html$text(' mg of '),
+					A2(
+					elm$html$Html$strong,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text('Morphine.')
+						])),
+					A2(elm$html$Html$br, _List_Nil, _List_Nil),
+					A2(
+					elm$html$Html$strong,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							author$project$Drug$toString(to))
+						])),
+					elm$html$Html$text(' has a potency ratio of '),
+					A2(
+					elm$html$Html$code,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							elm$core$String$fromFloat(
+								author$project$Opioid$potency(to)))
+						])),
+					elm$html$Html$text(', '),
+					elm$html$Html$text('therefore '),
+					A2(
+					elm$html$Html$code,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							elm$core$String$fromFloat(
+								fromAmount * author$project$Opioid$potency(from)))
+						])),
+					elm$html$Html$text(' mg of '),
+					A2(
+					elm$html$Html$strong,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text('Morphine')
+						])),
+					elm$html$Html$text(' is equivalent to '),
+					A2(
+					elm$html$Html$code,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							A2(author$project$Opioid$equationFromMorphine, 5, to))
+						])),
+					elm$html$Html$text(' mg of '),
+					A2(
+					elm$html$Html$strong,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							author$project$Drug$toString(to))
+						]))
+				]));
+	});
+var elm$html$Html$a = _VirtualDom_node('a');
+var elm$html$Html$p = _VirtualDom_node('p');
+var elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
+var author$project$Opioid$note = A2(
+	elm$html$Html$div,
+	_List_Nil,
+	_List_fromArray(
+		[
+			A2(
+			elm$html$Html$h4,
+			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$text('Note')
+				])),
+			A2(
+			elm$html$Html$p,
+			_List_fromArray(
+				[
+					A2(elm$html$Html$Attributes$style, 'font-size', '10pt')
+				]),
+			_List_fromArray(
+				[
+					elm$html$Html$text('Individuals metabolise different opiods at different rates.'),
+					elm$html$Html$text(' When switching opioids, the RCoA '),
+					A2(
+					elm$html$Html$a,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$href('https://www.rcoa.ac.uk/faculty-of-pain-medicine/opioids-aware/structured-approach-to-prescribing/dose-equivalents-and-changing-opioids')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('recommends')
+						])),
+					elm$html$Html$text(' reducing the dose of the new opioid by 25-50%.'),
+					elm$html$Html$text(' This applies particularly for elderly or frail patients, or where the dosage is equivalent to more than 500mg of oral morphine in 24 hours.'),
+					elm$html$Html$text(' After conversion, the new opioid should be titrated according to the individual\'s response, taking into account side-effects and efficacy')
+				]))
+		]));
+var author$project$Opioid$setFromAmount = F2(
+	function (model, str) {
+		var _n0 = elm$core$String$toFloat(str);
+		if (!_n0.$) {
+			var amount = _n0.a;
+			return _Utils_update(
+				model,
+				{y: amount});
+		} else {
+			return model;
+		}
+	});
+var author$project$Drug$fromString = function (str) {
+	switch (str) {
+		case 'Codeine':
+			return elm$core$Maybe$Just(0);
+		case 'Dihydrocodeine':
+			return elm$core$Maybe$Just(1);
+		case 'Hydromorphone':
+			return elm$core$Maybe$Just(2);
+		case 'Morphine':
+			return elm$core$Maybe$Just(3);
+		case 'Oxycodone':
+			return elm$core$Maybe$Just(4);
+		case 'Tapentadol':
+			return elm$core$Maybe$Just(5);
+		case 'Tramadol':
+			return elm$core$Maybe$Just(6);
+		default:
+			return elm$core$Maybe$Nothing;
+	}
+};
+var author$project$Opioid$setFromDrug = F2(
+	function (model, drug) {
+		var _n0 = author$project$Drug$fromString(drug);
+		if (!_n0.$) {
+			var d = _n0.a;
+			return _Utils_update(
+				model,
+				{p: d});
+		} else {
+			return model;
+		}
+	});
+var author$project$Opioid$setToDrug = F2(
+	function (model, drug) {
+		var _n0 = author$project$Drug$fromString(drug);
+		if (!_n0.$) {
+			var d = _n0.a;
+			return _Utils_update(
+				model,
+				{t: d});
+		} else {
+			return model;
+		}
+	});
+var elm$html$Html$h3 = _VirtualDom_node('h3');
+var elm$html$Html$Attributes$disabled = elm$html$Html$Attributes$boolProperty('disabled');
+var elm$html$Html$Attributes$readonly = elm$html$Html$Attributes$boolProperty('readOnly');
+var author$project$Opioid$view = F2(
 	function (update, model) {
-		return A2(elm$html$Html$div, _List_Nil, _List_Nil);
+		return A2(
+			elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					elm$html$Html$h3,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text('Convert')
+						])),
+					A2(
+					elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$input,
+							_List_fromArray(
+								[
+									elm$html$Html$Events$onInput(
+									A2(
+										elm$core$Basics$composeL,
+										update,
+										author$project$Opioid$setFromAmount(model)))
+								]),
+							_List_Nil),
+							elm$html$Html$text(' mg of '),
+							A2(
+							author$project$Opioid$drugSelect,
+							model.p,
+							A2(
+								elm$core$Basics$composeL,
+								update,
+								author$project$Opioid$setFromDrug(model)))
+						])),
+					A2(
+					elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							A2(
+							elm$html$Html$input,
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$disabled(true),
+									elm$html$Html$Attributes$readonly(true),
+									elm$html$Html$Attributes$value(
+									elm$core$String$fromFloat(
+										A3(author$project$Opioid$dose, model.p, model.y, model.t)))
+								]),
+							_List_Nil),
+							elm$html$Html$text(' mg of '),
+							A2(
+							author$project$Opioid$drugSelect,
+							model.t,
+							A2(
+								elm$core$Basics$composeL,
+								update,
+								author$project$Opioid$setToDrug(model)))
+						])),
+					A3(author$project$Opioid$explain, model.p, model.y, model.t),
+					A2(elm$html$Html$br, _List_Nil, _List_Nil),
+					author$project$Opioid$note
+				]));
 	});
 var author$project$Main$body = function (page) {
 	if (!page.$) {
@@ -6485,21 +6866,14 @@ var author$project$Main$body = function (page) {
 	} else {
 		var model = page.a;
 		return A2(
-			author$project$Opiate$view,
+			author$project$Opioid$view,
 			function (m) {
-				return author$project$Main$Opiate(m);
+				return author$project$Main$Opioid(m);
 			},
 			model);
 	}
 };
-var author$project$Opiate$init = {};
-var elm$html$Html$a = _VirtualDom_node('a');
-var elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
+var author$project$Opioid$init = {y: 1, p: 3, t: 3};
 var elm$html$Html$Events$onClick = function (msg) {
 	return A2(
 		elm$html$Html$Events$on,
@@ -6529,11 +6903,11 @@ var author$project$Main$header = A2(
 				[
 					elm$html$Html$Attributes$href('#'),
 					elm$html$Html$Events$onClick(
-					author$project$Main$Opiate(author$project$Opiate$init))
+					author$project$Main$Opioid(author$project$Opioid$init))
 				]),
 			_List_fromArray(
 				[
-					elm$html$Html$text('Opiates')
+					elm$html$Html$text('Opioids')
 				]))
 		]));
 var author$project$Main$view = function (model) {
@@ -6543,7 +6917,7 @@ var author$project$Main$view = function (model) {
 		_List_fromArray(
 			[
 				author$project$Main$header,
-				author$project$Main$body(model.P)
+				author$project$Main$body(model.S)
 			]));
 };
 var elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -6665,7 +7039,7 @@ var elm$core$String$left = F2(
 var elm$core$String$contains = _String_contains;
 var elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {ad: fragment, ae: host, ai: path, ak: port_, an: protocol, ao: query};
+		return {ag: fragment, ah: host, al: path, an: port_, aq: protocol, ar: query};
 	});
 var elm$url$Url$chompBeforePath = F5(
 	function (protocol, path, params, frag, str) {
@@ -6772,22 +7146,22 @@ var elm$url$Url$fromString = function (str) {
 var elm$browser$Browser$sandbox = function (impl) {
 	return _Browser_element(
 		{
-			aE: function (_n0) {
-				return _Utils_Tuple2(impl.aE, elm$core$Platform$Cmd$none);
+			aH: function (_n0) {
+				return _Utils_Tuple2(impl.aH, elm$core$Platform$Cmd$none);
 			},
-			aK: function (_n1) {
+			aN: function (_n1) {
 				return elm$core$Platform$Sub$none;
 			},
-			aM: F2(
+			aP: F2(
 				function (msg, model) {
 					return _Utils_Tuple2(
-						A2(impl.aM, msg, model),
+						A2(impl.aP, msg, model),
 						elm$core$Platform$Cmd$none);
 				}),
-			aO: impl.aO
+			aR: impl.aR
 		});
 };
 var author$project$Main$main = elm$browser$Browser$sandbox(
-	{aE: author$project$Main$init, aM: author$project$Main$update, aO: author$project$Main$view});
+	{aH: author$project$Main$init, aP: author$project$Main$update, aR: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$succeed(0))(0)}});}(this));
