@@ -5936,6 +5936,7 @@ var author$project$Gentamicin$heightInput = F2(
 							elm$html$Html$select,
 							_List_fromArray(
 								[
+									elm$html$Html$Attributes$class('form-control-lg'),
 									A2(
 									elm$html$Html$Events$on,
 									'change',

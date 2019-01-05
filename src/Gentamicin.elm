@@ -522,7 +522,7 @@ heightInput update model =
             [ div [ class "input-group-text" ]
                 [ text (Maybe.withDefault "" (Maybe.map (\s -> " (" ++ s ++ ")") (Maybe.map heightToString model.height)))
                 ]
-            , select [ on "change" (map (update << setHeightUnit model) targetValue) ]
+            , select [ class "form-control-lg", on "change" (map (update << setHeightUnit model) targetValue) ]
                 [ option [ selected (unit == Cm), value "cm" ] [ text "Centimetres" ]
                 , option [ selected (unit == Inch), value "inch" ] [ text "Inches" ]
                 ]
