@@ -3903,7 +3903,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		impl.aP,
 		impl.aN,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.L && impl.L(sendToApp)
+			var divertHrefToApp = impl.M && impl.M(sendToApp)
 			var view = impl.aR;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -3973,7 +3973,7 @@ function _Browser_application(impl)
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		L: function(sendToApp)
+		M: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4285,10 +4285,22 @@ function _Browser_load(url)
 		}
 	}));
 }
-var author$project$Gentamicin$Daily5mg = 0;
-var author$project$Gentamicin$Female = 1;
-var author$project$Gentamicin$Inch = 1;
-var elm$core$Maybe$Nothing = {$: 1};
+var author$project$Main$Opioid = function (a) {
+	return {$: 1, a: a};
+};
+var author$project$Drug$Morphine = 3;
+var author$project$Opioid$init = {y: 1, p: 3, t: 3};
+var author$project$Main$init = {
+	K: author$project$Main$Opioid(author$project$Opioid$init)
+};
+var author$project$Main$update = F2(
+	function (msg, model) {
+		var p = msg;
+		return _Utils_update(
+			model,
+			{K: p});
+	});
+var author$project$Gentamicin$Daily7mg = 1;
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
 var elm$core$Array$foldr = F3(
 	function (func, baseCase, _n0) {
@@ -4369,30 +4381,6 @@ var elm$core$Set$toList = function (_n0) {
 	var dict = _n0;
 	return elm$core$Dict$keys(dict);
 };
-var author$project$Gentamicin$init = {
-	E: elm$core$Maybe$Nothing,
-	H: 1,
-	w: 0,
-	I: _Utils_Tuple2(6, elm$core$Maybe$Nothing),
-	h: elm$core$Maybe$Nothing,
-	K: elm$core$Maybe$Nothing,
-	s: 1,
-	v: elm$core$Maybe$Nothing
-};
-var author$project$Main$Gentamicin = function (a) {
-	return {$: 0, a: a};
-};
-var author$project$Main$init = {
-	S: author$project$Main$Gentamicin(author$project$Gentamicin$init)
-};
-var author$project$Main$update = F2(
-	function (msg, model) {
-		var p = msg;
-		return _Utils_update(
-			model,
-			{S: p});
-	});
-var author$project$Gentamicin$Daily7mg = 1;
 var elm$core$Basics$append = _Utils_append;
 var elm$core$Basics$identity = function (x) {
 	return x;
@@ -4580,6 +4568,7 @@ var elm$core$Array$initialize = F2(
 var elm$core$Maybe$Just = function (a) {
 	return {$: 0, a: a};
 };
+var elm$core$Maybe$Nothing = {$: 1};
 var elm$core$Result$Err = function (a) {
 	return {$: 1, a: a};
 };
@@ -5063,7 +5052,7 @@ var author$project$Gentamicin$creatinineClearance = function (_n0) {
 	var sex = _n0.s;
 	var age = _n0.E;
 	var weight = _n0.v;
-	var serumCreatinine = _n0.K;
+	var serumCreatinine = _n0.L;
 	var _n1 = _Utils_Tuple3(age, weight, serumCreatinine);
 	if (((!_n1.a.$) && (!_n1.b.$)) && (!_n1.c.$)) {
 		var a = _n1.a.a;
@@ -5079,6 +5068,7 @@ var author$project$Gentamicin$creatinineClearance = function (_n0) {
 		return elm$core$Maybe$Nothing;
 	}
 };
+var author$project$Gentamicin$Daily5mg = 0;
 var author$project$Gentamicin$Divided = 2;
 var author$project$Gentamicin$setDosage = F2(
 	function (model, mDosage) {
@@ -5219,9 +5209,9 @@ var author$project$Gentamicin$daily = F2(
 			var max = _n1.b;
 			return elm$core$Maybe$Just(
 				{
-					Q: perKg,
+					R: perKg,
 					V: following,
-					R: _Utils_Tuple2(min, max),
+					S: _Utils_Tuple2(min, max),
 					X: note
 				});
 		}
@@ -5232,8 +5222,8 @@ var author$project$Gentamicin$daily5mgDosageInstruction = F2(
 		if (_n0.$ === 1) {
 			return _Utils_Tuple3('', '', '');
 		} else {
-			var base = _n0.a.Q;
-			var initial = _n0.a.R;
+			var base = _n0.a.R;
+			var initial = _n0.a.S;
 			var following = _n0.a.V;
 			var note = _n0.a.X;
 			var rangeStr = function (_n4) {
@@ -5292,8 +5282,8 @@ var author$project$Gentamicin$daily7mgDosageInstruction = F2(
 		if (_n0.$ === 1) {
 			return _Utils_Tuple3('', '', '');
 		} else {
-			var base = _n0.a.Q;
-			var initial = _n0.a.R;
+			var base = _n0.a.R;
+			var initial = _n0.a.S;
 			var initialStr = function () {
 				var _n7 = initial;
 				var max = _n7.b;
@@ -5806,6 +5796,7 @@ var author$project$Gentamicin$gentamicinLevelInput = F2(
 		}
 	});
 var author$project$Gentamicin$Cm = 0;
+var author$project$Gentamicin$Inch = 1;
 var author$project$Gentamicin$cmToString = function (h) {
 	var metres = (h / 100) | 0;
 	var cm = h % 100;
@@ -6003,7 +5994,7 @@ var author$project$Gentamicin$setSerumCreatinine = F2(
 		return _Utils_update(
 			model,
 			{
-				K: A2(
+				L: A2(
 					elm$core$Maybe$map,
 					elm$core$Basics$identity,
 					elm$core$String$toFloat(scStr))
@@ -6021,7 +6012,7 @@ var author$project$Gentamicin$serumCreatinineInput = F2(
 					var sc = _n0;
 					return elm$core$String$fromFloat(sc);
 				},
-				model.K));
+				model.L));
 		return A2(
 			elm$html$Html$div,
 			_List_fromArray(
@@ -6063,6 +6054,7 @@ var author$project$Gentamicin$serumCreatinineInput = F2(
 						]))
 				]));
 	});
+var author$project$Gentamicin$Female = 1;
 var author$project$Gentamicin$Male = 0;
 var author$project$Gentamicin$setSex = F2(
 	function (model, mSex) {
@@ -6465,8 +6457,8 @@ var author$project$Gentamicin$view = F2(
 					A2(elm$html$Html$div, _List_Nil, output)
 				]));
 	});
-var author$project$Main$Opioid = function (a) {
-	return {$: 1, a: a};
+var author$project$Main$Gentamicin = function (a) {
+	return {$: 0, a: a};
 };
 var author$project$Main$SetPage = elm$core$Basics$identity;
 var author$project$Opioid$potency = function (d) {
@@ -6495,7 +6487,6 @@ var author$project$Opioid$dose = F3(
 var author$project$Drug$Codeine = 0;
 var author$project$Drug$Dihydrocodeine = 1;
 var author$project$Drug$Hydromorphone = 2;
-var author$project$Drug$Morphine = 3;
 var author$project$Drug$Oxycodone = 4;
 var author$project$Drug$Tapentadol = 5;
 var author$project$Drug$Tramadol = 6;
@@ -6873,51 +6864,119 @@ var author$project$Main$body = function (page) {
 			model);
 	}
 };
-var author$project$Opioid$init = {y: 1, p: 3, t: 3};
+var author$project$Gentamicin$init = {
+	E: elm$core$Maybe$Nothing,
+	H: 1,
+	w: 0,
+	I: _Utils_Tuple2(6, elm$core$Maybe$Nothing),
+	h: elm$core$Maybe$Nothing,
+	L: elm$core$Maybe$Nothing,
+	s: 1,
+	v: elm$core$Maybe$Nothing
+};
+var author$project$Main$pageName = function (page) {
+	if (page.$ === 1) {
+		return 'opioid';
+	} else {
+		return 'gentamicin';
+	}
+};
+var elm$html$Html$h2 = _VirtualDom_node('h2');
+var elm$html$Html$nav = _VirtualDom_node('nav');
 var elm$html$Html$Events$onClick = function (msg) {
 	return A2(
 		elm$html$Html$Events$on,
 		'click',
 		elm$json$Json$Decode$succeed(msg));
 };
-var author$project$Main$header = A2(
-	elm$html$Html$div,
-	_List_Nil,
-	_List_fromArray(
-		[
-			A2(
-			elm$html$Html$a,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$href('#'),
-					elm$html$Html$Events$onClick(
-					author$project$Main$Gentamicin(author$project$Gentamicin$init))
-				]),
-			_List_fromArray(
-				[
-					elm$html$Html$text('Gentamicin')
-				])),
-			A2(
-			elm$html$Html$a,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$href('#'),
-					elm$html$Html$Events$onClick(
-					author$project$Main$Opioid(author$project$Opioid$init))
-				]),
-			_List_fromArray(
-				[
-					elm$html$Html$text('Opioids')
-				]))
-		]));
+var author$project$Main$header = function (page) {
+	var active = function (pageStr) {
+		return _Utils_eq(
+			author$project$Main$pageName(page),
+			pageStr) ? elm$html$Html$Attributes$class('active') : elm$html$Html$Attributes$class('');
+	};
+	return A2(
+		elm$html$Html$nav,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$class('navbar navbar-expand-lg navbar-light bg-light')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				elm$html$Html$a,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('navbar-brand'),
+						elm$html$Html$Attributes$href('#')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$h2,
+						_List_Nil,
+						_List_fromArray(
+							[
+								elm$html$Html$text('Dosage')
+							]))
+					])),
+				A2(
+				elm$html$Html$div,
+				_List_fromArray(
+					[
+						elm$html$Html$Attributes$class('navbar-collapse')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						elm$html$Html$div,
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$class('navbar-nav')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								elm$html$Html$a,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('nav-item nav-link'),
+										active('opioid'),
+										elm$html$Html$Attributes$href('#'),
+										elm$html$Html$Events$onClick(
+										author$project$Main$Opioid(author$project$Opioid$init))
+									]),
+								_List_fromArray(
+									[
+										elm$html$Html$text('Opioids')
+									])),
+								A2(
+								elm$html$Html$a,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('nav-item nav-link'),
+										active('gentamicin'),
+										elm$html$Html$Attributes$href('#'),
+										elm$html$Html$Events$onClick(
+										author$project$Main$Gentamicin(author$project$Gentamicin$init))
+									]),
+								_List_fromArray(
+									[
+										elm$html$Html$text('Gentamicin')
+									]))
+							]))
+					]))
+			]));
+};
 var author$project$Main$view = function (model) {
 	return A2(
 		elm$html$Html$div,
 		_List_Nil,
 		_List_fromArray(
 			[
-				author$project$Main$header,
-				author$project$Main$body(model.S)
+				author$project$Main$header(model.K),
+				A2(elm$html$Html$br, _List_Nil, _List_Nil),
+				author$project$Main$body(model.K)
 			]));
 };
 var elm$core$Platform$Cmd$batch = _Platform_batch;
