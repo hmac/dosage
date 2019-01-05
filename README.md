@@ -5,5 +5,5 @@ Build
 -----
 
     make
-    open index.html
+    open docs/index.html
 
