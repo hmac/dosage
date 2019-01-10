@@ -6462,7 +6462,7 @@ var author$project$Main$Gentamicin = function (a) {
 	return {$: 0, a: a};
 };
 var author$project$Main$SetPage = elm$core$Basics$identity;
-var author$project$Opioid$potency = function (d) {
+var author$project$Drug$potency = function (d) {
 	switch (d) {
 		case 0:
 			return 0.1;
@@ -6476,23 +6476,32 @@ var author$project$Opioid$potency = function (d) {
 			return 2;
 		case 5:
 			return 0.4;
-		default:
+		case 6:
 			return 0.15;
+		case 7:
+			return 3;
+		case 8:
+			return 2;
+		default:
+			return 4;
 	}
 };
 var author$project$Opioid$dose = F3(
 	function (from, amount, to) {
-		var inMorphine = amount * author$project$Opioid$potency(from);
-		return inMorphine / author$project$Opioid$potency(to);
+		var inMorphine = amount * author$project$Drug$potency(from);
+		return inMorphine / author$project$Drug$potency(to);
 	});
 var author$project$Drug$Codeine = 0;
 var author$project$Drug$Dihydrocodeine = 1;
 var author$project$Drug$Hydromorphone = 2;
 var author$project$Drug$Oxycodone = 4;
+var author$project$Drug$SubcutDiamorphine = 7;
+var author$project$Drug$SubcutMorphine = 8;
+var author$project$Drug$SubcutOxycodone = 9;
 var author$project$Drug$Tapentadol = 5;
 var author$project$Drug$Tramadol = 6;
 var author$project$Drug$all = _List_fromArray(
-	[0, 1, 2, 3, 4, 5, 6]);
+	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 var author$project$Drug$toString = function (d) {
 	switch (d) {
 		case 0:
@@ -6507,8 +6516,14 @@ var author$project$Drug$toString = function (d) {
 			return 'Oxycodone';
 		case 5:
 			return 'Tapentadol';
-		default:
+		case 6:
 			return 'Tramadol';
+		case 7:
+			return 'Subcutaneous Diamorphine';
+		case 8:
+			return 'Subcutaneous Morphine';
+		default:
+			return 'Subcutaneous Oxycodone';
 	}
 };
 var author$project$Opioid$drugSelect = F2(
@@ -6540,14 +6555,14 @@ var author$project$Opioid$drugSelect = F2(
 var author$project$Opioid$equationFromMorphine = F2(
 	function (fromAmount, drug) {
 		return elm$core$String$fromFloat(fromAmount) + (' / ' + (elm$core$String$fromFloat(
-			author$project$Opioid$potency(drug)) + (' = ' + elm$core$String$fromFloat(
-			fromAmount / author$project$Opioid$potency(drug)))));
+			author$project$Drug$potency(drug)) + (' = ' + elm$core$String$fromFloat(
+			fromAmount / author$project$Drug$potency(drug)))));
 	});
 var author$project$Opioid$equationToMorphine = F2(
 	function (fromAmount, drug) {
 		return elm$core$String$fromFloat(fromAmount) + (' * ' + (elm$core$String$fromFloat(
-			author$project$Opioid$potency(drug)) + (' = ' + elm$core$String$fromFloat(
-			fromAmount * author$project$Opioid$potency(drug)))));
+			author$project$Drug$potency(drug)) + (' = ' + elm$core$String$fromFloat(
+			fromAmount * author$project$Drug$potency(drug)))));
 	});
 var elm$html$Html$br = _VirtualDom_node('br');
 var elm$html$Html$code = _VirtualDom_node('code');
@@ -6575,7 +6590,7 @@ var author$project$Opioid$explain = F3(
 						[
 							elm$html$Html$text(
 							elm$core$String$fromFloat(
-								author$project$Opioid$potency(from)))
+								author$project$Drug$potency(from)))
 						])),
 					elm$html$Html$text(', '),
 					elm$html$Html$text('therefore '),
@@ -6630,7 +6645,7 @@ var author$project$Opioid$explain = F3(
 						[
 							elm$html$Html$text(
 							elm$core$String$fromFloat(
-								author$project$Opioid$potency(to)))
+								author$project$Drug$potency(to)))
 						])),
 					elm$html$Html$text(', '),
 					elm$html$Html$text('therefore '),
@@ -6641,7 +6656,7 @@ var author$project$Opioid$explain = F3(
 						[
 							elm$html$Html$text(
 							elm$core$String$fromFloat(
-								fromAmount * author$project$Opioid$potency(from)))
+								fromAmount * author$project$Drug$potency(from)))
 						])),
 					elm$html$Html$text(' mg of '),
 					A2(
@@ -6660,7 +6675,7 @@ var author$project$Opioid$explain = F3(
 							elm$html$Html$text(
 							A2(
 								author$project$Opioid$equationFromMorphine,
-								fromAmount * author$project$Opioid$potency(from),
+								fromAmount * author$project$Drug$potency(from),
 								to))
 						])),
 					elm$html$Html$text(' mg of '),
@@ -6749,6 +6764,12 @@ var author$project$Drug$fromString = function (str) {
 			return elm$core$Maybe$Just(5);
 		case 'Tramadol':
 			return elm$core$Maybe$Just(6);
+		case 'Subcutaneous Diamorphine':
+			return elm$core$Maybe$Just(7);
+		case 'Subcutaneous Morphine':
+			return elm$core$Maybe$Just(8);
+		case 'Subcutaneous Oxycodone':
+			return elm$core$Maybe$Just(9);
 		default:
 			return elm$core$Maybe$Nothing;
 	}

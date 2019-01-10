@@ -1,6 +1,6 @@
 module Opioid exposing (Model, init, view)
 
-import Drug exposing (Drug)
+import Drug exposing (Drug, potency)
 import Html
     exposing
         ( Html
@@ -113,31 +113,6 @@ drugSelect current onChange =
             option [ value (Drug.toString d), selected (d == current) ] [ text (Drug.toString d) ]
     in
     select [ onInput onChange ] (List.map drugOption Drug.all)
-
-
-potency : Drug -> Float
-potency d =
-    case d of
-        Drug.Codeine ->
-            0.1
-
-        Drug.Dihydrocodeine ->
-            0.1
-
-        Drug.Hydromorphone ->
-            7.5
-
-        Drug.Morphine ->
-            1
-
-        Drug.Oxycodone ->
-            2
-
-        Drug.Tapentadol ->
-            0.4
-
-        Drug.Tramadol ->
-            0.15
 
 
 dose : Drug -> Float -> Drug -> Float

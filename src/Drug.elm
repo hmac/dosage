@@ -1,4 +1,4 @@
-module Drug exposing (Drug(..), all, decode, encode, fromString, toString)
+module Drug exposing (Drug(..), all, decode, encode, fromString, potency, toString)
 
 import Json.Decode
 import Json.Encode
@@ -12,11 +12,58 @@ type Drug
     | Oxycodone
     | Tapentadol
     | Tramadol
+    | SubcutDiamorphine
+    | SubcutMorphine
+    | SubcutOxycodone
+
+
+potency : Drug -> Float
+potency d =
+    case d of
+        Codeine ->
+            0.1
+
+        Dihydrocodeine ->
+            0.1
+
+        Hydromorphone ->
+            7.5
+
+        Morphine ->
+            1
+
+        Oxycodone ->
+            2
+
+        Tapentadol ->
+            0.4
+
+        Tramadol ->
+            0.15
+
+        SubcutDiamorphine ->
+            3
+
+        SubcutMorphine ->
+            2
+
+        SubcutOxycodone ->
+            4
 
 
 all : List Drug
 all =
-    [ Codeine, Dihydrocodeine, Hydromorphone, Morphine, Oxycodone, Tapentadol, Tramadol ]
+    [ Codeine
+    , Dihydrocodeine
+    , Hydromorphone
+    , Morphine
+    , Oxycodone
+    , Tapentadol
+    , Tramadol
+    , SubcutDiamorphine
+    , SubcutMorphine
+    , SubcutOxycodone
+    ]
 
 
 toString : Drug -> String
@@ -43,6 +90,15 @@ toString d =
         Tramadol ->
             "Tramadol"
 
+        SubcutDiamorphine ->
+            "Subcutaneous Diamorphine"
+
+        SubcutMorphine ->
+            "Subcutaneous Morphine"
+
+        SubcutOxycodone ->
+            "Subcutaneous Oxycodone"
+
 
 fromString : String -> Maybe Drug
 fromString str =
@@ -67,6 +123,15 @@ fromString str =
 
         "Tramadol" ->
             Just Tramadol
+
+        "Subcutaneous Diamorphine" ->
+            Just SubcutDiamorphine
+
+        "Subcutaneous Morphine" ->
+            Just SubcutMorphine
+
+        "Subcutaneous Oxycodone" ->
+            Just SubcutOxycodone
 
         _ ->
             Nothing
