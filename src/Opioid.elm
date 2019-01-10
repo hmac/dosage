@@ -10,17 +10,23 @@ import Html
         , div
         , h3
         , h4
-        , i
         , input
-        , label
         , option
         , p
-        , pre
         , select
         , strong
         , text
         )
-import Html.Attributes exposing (disabled, href, readonly, selected, style, value)
+import Html.Attributes
+    exposing
+        ( disabled
+        , href
+        , placeholder
+        , readonly
+        , selected
+        , style
+        , value
+        )
 import Html.Events exposing (on, onInput, targetValue)
 import Json.Decode
 import Json.Encode
@@ -32,7 +38,7 @@ type alias Model =
 
 init : Model
 init =
-    { fromDrug = Drug.Morphine, fromAmount = 1, toDrug = Drug.Morphine }
+    { fromDrug = Drug.Codeine, fromAmount = 1, toDrug = Drug.Tapentadol }
 
 
 view : (Model -> msg) -> Model -> Html msg
@@ -40,7 +46,7 @@ view update model =
     div []
         [ h3 [] [ text "Convert" ]
         , p []
-            [ input [ onInput (update << setFromAmount model) ] []
+            [ input [ onInput (update << setFromAmount model), placeholder "1" ] []
             , text " mg of "
             , drugSelect model.fromDrug (update << setFromDrug model)
             ]

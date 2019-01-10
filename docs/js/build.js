@@ -4288,8 +4288,9 @@ function _Browser_load(url)
 var author$project$Main$Opioid = function (a) {
 	return {$: 1, a: a};
 };
-var author$project$Drug$Morphine = 3;
-var author$project$Opioid$init = {y: 1, p: 3, t: 3};
+var author$project$Drug$Codeine = 0;
+var author$project$Drug$Tapentadol = 5;
+var author$project$Opioid$init = {y: 1, p: 0, t: 5};
 var author$project$Main$init = {
 	K: author$project$Main$Opioid(author$project$Opioid$init)
 };
@@ -6491,14 +6492,13 @@ var author$project$Opioid$dose = F3(
 		var inMorphine = amount * author$project$Drug$potency(from);
 		return inMorphine / author$project$Drug$potency(to);
 	});
-var author$project$Drug$Codeine = 0;
 var author$project$Drug$Dihydrocodeine = 1;
 var author$project$Drug$Hydromorphone = 2;
+var author$project$Drug$Morphine = 3;
 var author$project$Drug$Oxycodone = 4;
 var author$project$Drug$SubcutDiamorphine = 7;
 var author$project$Drug$SubcutMorphine = 8;
 var author$project$Drug$SubcutOxycodone = 9;
-var author$project$Drug$Tapentadol = 5;
 var author$project$Drug$Tramadol = 6;
 var author$project$Drug$all = _List_fromArray(
 	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -6800,6 +6800,7 @@ var author$project$Opioid$setToDrug = F2(
 	});
 var elm$html$Html$h3 = _VirtualDom_node('h3');
 var elm$html$Html$Attributes$disabled = elm$html$Html$Attributes$boolProperty('disabled');
+var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
 var elm$html$Html$Attributes$readonly = elm$html$Html$Attributes$boolProperty('readOnly');
 var author$project$Opioid$view = F2(
 	function (update, model) {
@@ -6828,7 +6829,8 @@ var author$project$Opioid$view = F2(
 									A2(
 										elm$core$Basics$composeL,
 										update,
-										author$project$Opioid$setFromAmount(model)))
+										author$project$Opioid$setFromAmount(model))),
+									elm$html$Html$Attributes$placeholder('1')
 								]),
 							_List_Nil),
 							elm$html$Html$text(' mg of '),
